@@ -86,7 +86,7 @@ Skills operate within the **same context window** as the main conversation:
 | **Control** | Claude-controlled | User-controlled | Autonomous |
 | **Best For** | Domain expertise, guidelines | Repeatable shortcuts | Complex delegation |
 | **File Location** | `.claude/skills/*/SKILL.md` | `.claude/commands/*.md` | `.claude/agents/*.md` |
-| **Tool Restrictions** | Inherits from parent | ✅ `allowed-tools` | ✅ `tools` field |
+| **Tool Restrictions** | ✅ `allowed-tools` (optional) | ✅ `allowed-tools` | ✅ `tools` field |
 | **Model Override** | Not supported | ✅ Supported | ✅ Supported |
 | **Progressive Disclosure** | ✅ Supported | Not applicable | Not applicable |
 
@@ -133,13 +133,17 @@ Instructions and guidance here.
 ### YAML Frontmatter
 
 **Required Fields:**
-- `name`: Unique identifier (lowercase, hyphens)
-- `description`: Trigger description (max 1024 chars)
+- `name`: Max **64 characters**, lowercase letters/numbers/hyphens only, no XML tags
+- `description`: Max **1024 characters**, non-empty, no XML tags
+
+**Optional Fields:**
+- `allowed-tools`: Limit which tools Claude can use when Skill is active (e.g., `Read, Grep, Glob`)
 
 **Best Practices:**
 - Include ALL trigger keywords in description
 - Be specific about when skill should activate
 - Keep name in gerund form (verb+-ing): `processing-pdfs`
+- Use `allowed-tools` to restrict tool access for security-sensitive skills
 
 ### The 500-Line Rule
 
@@ -278,16 +282,21 @@ See [TRIGGER_TYPES](../skills/skill-developer/TRIGGER_TYPES.md) for complete ref
    - Load full content when needed
    - Load references on-demand
 
+6. **Restrict Tool Access (Optional)**
+   - Use `allowed-tools` in frontmatter
+   - Limit tools when skill is active
+   - Security for sensitive operations
+
 ---
 
 ## Limitations
 
 ### What Skills CANNOT Do
 
-1. **Override Tool Permissions**
-   - Skills inherit parent's tools
-   - Cannot add new tools
-   - Cannot restrict tools
+1. **Add New Tools Beyond Parent**
+   - Skills can restrict tools via `allowed-tools`
+   - But cannot grant tools the parent doesn't have
+   - Tool restriction is optional, not mandatory
 
 2. **Change Model Selection**
    - Uses parent conversation's model
