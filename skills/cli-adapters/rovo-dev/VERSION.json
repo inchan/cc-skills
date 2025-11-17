@@ -1,23 +1,38 @@
 {
-  "cli_name": "rovo-dev",
-  "display_name": "Atlassian Rovo Dev CLI",
-  "current_supported_version": "UNKNOWN",
-  "minimum_version": "UNKNOWN",
+  "cli_name": "acli-rovodev",
+  "display_name": "Atlassian Rovo Dev CLI (via ACLI)",
+  "current_supported_version": "BETA",
+  "minimum_version": "BETA",
   "last_checked": "2025-11-17",
-  "verified": false,
-  "warning": "이 CLI의 실제 존재 여부가 확인되지 않았습니다. Atlassian 공식 문서를 확인하세요.",
+  "last_updated": "2025-11-17",
+  "verified": true,
+  "warning": "베타 버전입니다. ACLI (Atlassian Command Line Interface) 설치가 필요합니다.",
   "sources": {
-    "official_docs": "UNVERIFIED - https://developer.atlassian.com/rovo/dev-cli",
-    "marketplace": "UNVERIFIED - https://marketplace.atlassian.com/rovo",
-    "changelog": "UNVERIFIED"
+    "official_docs": "https://support.atlassian.com/rovo/docs/install-and-run-rovo-dev-cli-on-your-device/",
+    "usage_guide": "https://support.atlassian.com/rovo/docs/use-rovo-dev-cli/",
+    "announcement": "https://www.atlassian.com/blog/announcements/rovo-dev-command-line-interface",
+    "product_page": "https://www.atlassian.com/software/rovo-dev"
+  },
+  "install_methods": {
+    "note": "ACLI를 먼저 설치해야 합니다 (OS별 설치 가이드 참조)",
+    "acli_guide_mac": "https://support.atlassian.com/rovo/docs/install-acli-macos/",
+    "acli_guide_linux": "https://support.atlassian.com/rovo/docs/install-acli-linux/",
+    "acli_guide_windows": "https://support.atlassian.com/rovo/docs/install-acli-windows/"
   },
   "verification": {
-    "install_check": "which rovo-dev",
-    "version_command": "rovo-dev --version"
+    "install_check": "which acli || command -v acli",
+    "version_command": "acli --version",
+    "rovodev_check": "acli rovodev --help"
   },
   "requirements": {
+    "acli": "최신 버전",
     "atlassian_cloud": true,
-    "jira_access": true,
-    "confluence_access": true
+    "api_token": "Atlassian API 토큰 필요",
+    "rovo_app_installed": "Rovo Dev Agents 앱이 Atlassian 사이트에 설치되어야 함"
+  },
+  "notes": {
+    "architecture": "독립 CLI가 아닌 ACLI의 서브커맨드",
+    "status": "베타 버전",
+    "benchmark": "SWE-bench 전체 벤치마크 41.98% (2,294개 작업)"
   }
 }

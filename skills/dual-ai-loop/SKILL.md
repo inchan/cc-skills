@@ -10,11 +10,11 @@ description: 외부 AI CLI(codex, qwen, copilot, rovo-dev, aider)와 Claude의 �
 **검증된 CLI** (2025-11-17):
 - ✅ **codex** (기본값) - @openai/codex v0.58.0 (npm 확인됨)
 - ✅ **aider** - aider-chat v0.86.1 (PyPI 확인됨)
+- ✅ **qwen** - @qwen-code/qwen-code v0.2.1 (npm 확인됨)
+- ✅ **rovo-dev** - ACLI rovodev (공식 문서 확인됨, 베타 버전)
 
-**미검증 CLI**:
+**부분 검증 CLI**:
 - ⚠️ **copilot** - 존재하나 직접 테스트 안됨
-- ❌ **qwen** - PyPI에서 찾을 수 없음, 대안으로 Ollama 사용 권장
-- ❌ **rovo-dev** - 존재 여부 불확실
 
 **실제 동작 방식**:
 - 이 스킬은 "자동화된 시스템"이 아닙니다
@@ -43,11 +43,11 @@ description: 외부 AI CLI(codex, qwen, copilot, rovo-dev, aider)와 Claude의 �
 
 1. codex (기본값) - ✅ OpenAI Codex CLI (검증됨)
 2. aider - ✅ Aider CLI (검증됨)
-3. copilot - ⚠️ GitHub Copilot CLI (부분 검증)
-4. qwen - ❌ Alibaba Qwen CLI (미검증 - 존재 불확실)
-5. rovo-dev - ❌ Atlassian Rovo Dev CLI (미검증)
+3. qwen - ✅ Qwen Code CLI (검증됨)
+4. rovo-dev - ✅ Atlassian Rovo Dev CLI via ACLI (검증됨, 베타)
+5. copilot - ⚠️ GitHub Copilot CLI (부분 검증)
 
-권장: codex 또는 aider (검증된 CLI)
+권장: codex, aider, qwen, 또는 rovo-dev (검증된 CLI)
 ```
 
 ### Step 2: CLI 상태 확인

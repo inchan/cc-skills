@@ -1,125 +1,133 @@
 ---
 name: qwen-cli-adapter
-description: Alibaba Qwen CLI 어댑터. dual-ai-loop에서 Qwen 모델을 사용하기 위한 설치, 명령어 패턴, 에러 처리 가이드.
+description: Qwen Code CLI 어댑터. dual-ai-loop에서 Qwen 모델을 사용하기 위한 설치, 명령어 패턴, 에러 처리 가이드.
 ---
 
-# Qwen CLI Adapter
+# Qwen Code CLI Adapter
 
 ## 검증 상태
 
-❌ **미검증** (2025-11-17)
-- PyPI에서 `qwen-cli` 패키지 **존재하지 않음** (직접 확인됨)
-- GitHub에서 `alibaba/qwen-cli` 저장소 **확인되지 않음**
-- 아래 정보는 **추측 기반이며 실제 작동하지 않을 수 있습니다**
-
-⚠️ **경고**: 이 CLI가 실제로 존재하는지 확인되지 않았습니다.
-
-## 검증된 대안
-
-Qwen 모델을 사용하려면 다음을 고려하세요:
-
-```bash
-# Ollama (권장 - 실제로 작동함)
-ollama pull qwen2.5-coder
-ollama run qwen2.5-coder "프롬프트"
-
-# Hugging Face Transformers (Python 라이브러리)
-pip install transformers
-# from transformers import AutoModelForCausalLM
-
-# vLLM (로컬 서버)
-pip install vllm
-```
+✅ **검증됨** (2025-11-17)
+- npm 패키지: @qwen-code/qwen-code (v0.2.1)
+- GitHub: https://github.com/QwenLM/qwen-code
+- 공식 Qwen 팀 관리
 
 ## 개요
 
-Alibaba Qwen CLI와의 통합을 위한 어댑터입니다.
+Qwen Code CLI와의 통합을 위한 어댑터입니다. AI 기반 코딩 어시스턴트입니다.
 
-## 설치 확인 (미검증)
+## 설치 확인
 
 ```bash
 which qwen
 qwen --version
 ```
 
-## 설치 방법 (⚠️ 미검증 - 실패 예상)
+## 설치 방법
 
 ```bash
-# ❌ 이 패키지는 PyPI에 존재하지 않습니다
-pip install qwen-cli  # ERROR: No matching distribution found
-
-# ❌ 이 저장소는 확인되지 않았습니다
-git clone https://github.com/alibaba/qwen-cli
-cd qwen-cli && pip install .
+# npm을 통한 설치 (검증됨)
+npm install -g @qwen-code/qwen-code@latest
 ```
 
-### 설정
+## 인증 설정
+
+### 방법 1: Qwen OAuth (권장)
 
 ```bash
-# API 키 설정 (클라우드 사용 시)
-export QWEN_API_KEY="your-key"
+# qwen 실행 후 브라우저에서 인증
+qwen
+# "Sign in" 선택 → 브라우저에서 인증
 
-# 로컬 모델 경로 (로컬 사용 시)
-qwen config set model_path "/path/to/model"
+# 제한사항:
+# - 일일 2,000개 요청
+# - 분당 60개 속도 제한
 ```
 
-## 명령어 패턴
+### 방법 2: OpenAI 호환 API
+
+```bash
+# 환경변수 설정
+export OPENAI_API_KEY="your-key"
+export OPENAI_BASE_URL="https://your-api-endpoint"
+export OPENAI_MODEL="your-model"
+
+# 또는 프로젝트 루트에 .env 파일 생성
+```
+
+## 명령어 패턴 (검증됨)
 
 ### 기본 실행
 
 ```bash
-# stdin으로 프롬프트
-echo "프롬프트" | qwen -p
+# 대화형 모드
+qwen
 
-# 모델 지정
-qwen -m qwen2.5-coder "프롬프트"
-
-# 파일 입력
-qwen -p < prompt.txt
+# YOLO 모드 (자동 실행)
+qwen --yolo
 ```
+
+### 대화형 세션 내 명령어
+
+| 명령어 | 설명 |
+|--------|------|
+| `/help` | 사용 가능한 명령어 표시 |
+| `/clear` | 대화 기록 삭제 |
+| `/compress` | 토큰 절약을 위해 히스토리 압축 |
+| `/stats` | 현재 세션 정보 표시 |
+| `/exit` 또는 `/quit` | 종료 |
 
 ### 주요 옵션
 
 | 옵션 | 설명 |
 |------|------|
-| `-p, --prompt` | stdin에서 프롬프트 읽기 |
-| `-m, --model` | 모델 선택 |
-| `-t, --temperature` | 생성 온도 |
-| `--max-tokens` | 최대 토큰 수 |
+| `--yolo` | YOLO 모드에서 자동 실행 |
+| `--vlm-switch-mode` | 비전 모델 자동 전환 (once/session/persist) |
 
 ## dual-ai-loop 연동
 
 ### 구현자 역할
 
-```bash
-echo "구현 요청:
-[Claude의 계획]
+Qwen Code는 대화형 인터페이스입니다. dual-ai-loop에서 사용 시:
 
-요구사항:
-- 완전한 코드
-- 에러 처리
-- 주석 포함" | qwen -p -m qwen2.5-coder
+1. `qwen` 실행
+2. Claude의 계획을 프롬프트로 입력
+3. 결과를 Claude에게 전달
+
+```bash
+# 대화형 모드에서
+qwen
+# 그 후 프롬프트 입력:
+# "구현 요청: [Claude의 계획]"
 ```
 
 ### 검증자 역할
 
 ```bash
-echo "코드 검증:
-[Claude의 코드]
-
-검증 항목:
-- 로직 정확성
-- 성능
-- 보안" | qwen -p -m qwen2.5-coder
+qwen
+# "코드 검증: [Claude의 코드]"
 ```
 
 ## 버전 정보
 
-**지원 버전**: 1.0.0+
-**최소 버전**: 0.9.0
+**최신 버전**: 0.2.1 (npm 확인됨)
+**최소 버전**: 0.1.0
+
+## 특징
+
+- **Qwen OAuth 인증**: 브라우저 기반 인증
+- **비전 모델 지원**: 이미지 분석 가능
+- **YOLO 모드**: 자동 실행
+- **대화 히스토리 압축**: 토큰 최적화
 
 ## 제한사항
 
-- 로컬 모델은 높은 시스템 요구사항
-- 클라우드 사용 시 API 비용
-- 영어/중국어 최적화 (다른 언어는 성능 저하 가능)
+- OAuth 인증 시 일일 요청 제한 (2,000개)
+- 대화형 인터페이스 (stdin 파이프 지원 확인 필요)
+- Node.js 환경 필요
+
+## 참고
+
+- **이전 정보 수정**: `pip install qwen-cli`는 잘못된 정보였습니다
+- **실제 패키지**: `npm install -g @qwen-code/qwen-code`
+- **GitHub**: https://github.com/QwenLM/qwen-code (NOT alibaba/qwen-cli)

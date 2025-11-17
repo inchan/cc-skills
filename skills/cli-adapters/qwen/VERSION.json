@@ -1,27 +1,36 @@
 {
   "cli_name": "qwen",
-  "display_name": "Alibaba Qwen CLI",
-  "current_supported_version": "UNKNOWN",
-  "minimum_version": "UNKNOWN",
+  "display_name": "Qwen Code CLI",
+  "current_supported_version": "0.2.1",
+  "minimum_version": "0.1.0",
   "last_checked": "2025-11-17",
-  "verified": false,
-  "warning": "PyPI에서 qwen-cli 패키지를 찾을 수 없습니다. 실제 존재 여부가 확인되지 않았습니다.",
+  "last_updated": "2025-11-17",
+  "verified": true,
   "sources": {
-    "official_docs": "UNVERIFIED - https://qwen.alibaba.com/docs/cli",
-    "github_repo": "UNVERIFIED - https://github.com/alibaba/qwen-cli",
-    "changelog": "UNVERIFIED"
+    "github_repo": "https://github.com/QwenLM/qwen-code",
+    "changelog": "https://github.com/QwenLM/qwen-code/releases",
+    "npm_package": "https://www.npmjs.com/package/@qwen-code/qwen-code"
   },
-  "alternatives": {
-    "ollama": "ollama pull qwen2.5-coder && ollama run qwen2.5-coder",
-    "transformers": "pip install transformers",
-    "vllm": "pip install vllm"
+  "install_methods": {
+    "npm": "npm install -g @qwen-code/qwen-code@latest"
   },
   "verification": {
-    "install_check": "which qwen",
-    "version_command": "qwen --version"
+    "install_check": "which qwen || command -v qwen",
+    "version_command": "qwen --version",
+    "health_check": "qwen --help"
   },
   "requirements": {
-    "api_key_env": "QWEN_API_KEY",
-    "min_python_version": "3.8"
+    "authentication": "Qwen OAuth OR OpenAI-compatible API",
+    "min_node_version": "16.0.0",
+    "os": ["linux", "macos", "windows"]
+  },
+  "notes": {
+    "auth_method": "Qwen OAuth 권장 (일일 2,000 요청 제한)",
+    "interactive_mode": "qwen (대화형 인터페이스)",
+    "yolo_mode": "qwen --yolo (자동 실행)"
+  },
+  "rate_limits": {
+    "daily_requests": 2000,
+    "requests_per_minute": 60
   }
 }
