@@ -1,413 +1,502 @@
 ---
 name: intelligent-task-router
-description: Analyze incoming tasks and automatically route them to the optimal processing path using intelligent classification based on keywords, intent, complexity, and urgency. Implements the Routing pattern from Anthropic's Building Effective Agents guide.
+description: Implements Anthropic's Routing pattern to classify incoming tasks and direct them to specialized handlers. Analyzes task complexity, intent, and category to select optimal processing path and model (Haiku/Sonnet/Opus). Use as the entry point for complex requests requiring intelligent dispatch.
 ---
 
-# Intelligent Task Router
+# Intelligent Task Router (Routing Pattern)
 
-Automatically classify and route tasks to the optimal skill and model based on multi-factor analysis including category, intent, complexity, and urgency.
+## Overview
 
-## Purpose
+This skill implements the **Routing** workflow pattern from Anthropic's "Building Effective Agents". The core principle is to classify input and direct it to specialized downstream processes, allowing optimization for different task categories.
 
-This skill implements the **Routing pattern** from Anthropic's Building Effective Agents methodology. Instead of using a single approach for all tasks, this skill acts as an intelligent dispatcher that analyzes each task request and routes it to the most appropriate processing path.
+**Reference**: https://www.anthropic.com/engineering/building-effective-agents
 
-The router provides:
-- **8-category classification system** for common development tasks
-- **Intent detection** to understand the user's underlying goal
-- **Complexity analysis** for effort estimation and model selection
-- **Urgency assessment** for prioritization
-- **Multi-label support** for tasks spanning multiple categories
+### Key Principle
+
+> "Routing classifies an input and directs it to a specialized followup task. This workflow allows for separation of concerns, and building more specialized prompts."
+
+**Trade-off**: Upfront classification cost for better specialized handling downstream.
 
 ## When to Use This Skill
 
-Use this skill when:
-- Starting a new task that could benefit from specialized handling
-- The task type is unclear and needs classification
-- You need to determine the optimal model (Haiku/Sonnet/Opus) for a task
-- Breaking down complex requests into categorized sub-tasks
-- Prioritizing multiple incoming tasks
-- A user request could be handled by different approaches
+**Ideal scenarios:**
+- Complex tasks with **distinct categories** requiring different handling
+- When **model selection** matters (cost vs. capability optimization)
+- Tasks where **accurate classification** is achievable
+- Entry point for multi-skill workflows
 
-**This skill should be used proactively** as the entry point for most development tasks before delegating to specialized skills.
+**Concrete examples:**
+- Customer support routing: refund → billing team, technical → support team
+- Development task routing: bug fix → debugger, feature → architect
+- Content processing: simple query → Haiku, complex analysis → Opus
+- Multi-language support: Korean → KO specialist, English → EN specialist
 
-## Task Categories
+**Do NOT use when:**
+- Task is already clearly defined
+- All inputs require the same handling
+- Classification overhead exceeds benefit
+- Real-time latency is critical
 
-The router classifies tasks into 8 primary categories:
+## Core Routing Workflow
 
-1. **bug_fix** - Code errors and issue resolution
-2. **feature_development** - New functionality implementation
-3. **refactoring** - Code structure improvement
-4. **testing** - Test creation and quality validation
-5. **documentation** - Documentation and explanation
-6. **performance** - Performance optimization
-7. **security** - Security hardening and vulnerability fixes
-8. **data_processing** - Data transformation and ETL
+### Input Classification
 
-Each category has associated keywords, complexity weights, and default skill mappings defined in `routing_rules/categories.yaml`.
-
-## Classification Process
-
-### Step 1: Keyword Analysis
-
-Use `classifiers/keyword_classifier.py` to extract keywords and calculate category scores:
-
-```python
-from classifiers.keyword_classifier import KeywordClassifier
-
-classifier = KeywordClassifier()
-primary, secondary, confidence = classifier.classify(task_text)
+```
+[Incoming Request]
+       ↓
+[Classification Analysis]
+       ↓
+[Category Assignment] ─→ Category A → [Handler A]
+       ↓                 Category B → [Handler B]
+       ↓                 Category C → [Handler C]
+       ↓
+[Route to Optimal Handler]
 ```
 
-This identifies:
-- **Primary category** - The main task type
-- **Secondary categories** - Additional relevant categories
-- **Confidence score** - How certain the classification is
+## Classification Framework
 
-### Step 2: Intent Detection
+### Step 1: Multi-Factor Analysis
 
-Use `classifiers/intent_classifier.py` to understand user intent:
+Analyze each incoming task across **4 dimensions**:
 
-```python
-from classifiers.intent_classifier import IntentClassifier
+```markdown
+## Task Classification: [Task Description]
 
-intent_classifier = IntentClassifier()
-intent_result = intent_classifier.classify(task_text)
+### 1. Category Analysis
+**Primary Category**: [one of 8 categories]
+**Secondary Categories**: [supporting categories]
+**Confidence**: [0-100%]
+
+### 2. Intent Detection
+**User Intent**: [CREATE/MODIFY/DEBUG/ANALYZE/OPTIMIZE/DOCUMENT/TEST]
+**Underlying Goal**: [what the user ultimately wants to achieve]
+
+### 3. Complexity Assessment
+**Scope**: [single file / multiple files / system-wide]
+**Dependencies**: [none / few / many]
+**Technical Depth**: [basic / intermediate / advanced]
+**Overall Complexity**: [0.0 - 1.0]
+
+### 4. Urgency Level
+**Priority**: [critical / high / medium / low]
+**Time Sensitivity**: [immediate / soon / eventual]
 ```
 
-This detects intents like:
-- CREATE - Building new functionality
-- MODIFY - Changing existing code
-- DEBUG - Fixing issues
-- ANALYZE - Understanding code
-- OPTIMIZE - Improving performance
-- DOCUMENT - Writing documentation
-- TEST - Creating tests
+### Step 2: Category Classification
 
-### Step 3: Complexity Analysis
+**8 Primary Categories:**
 
-Use `classifiers/complexity_analyzer.py` to assess task complexity:
+| Category | Keywords | Typical Complexity | Default Model |
+|----------|----------|-------------------|---------------|
+| **bug_fix** | bug, error, fix, 버그, 오류, 수정 | 0.3-0.6 | Sonnet |
+| **feature_development** | add, create, implement, 추가, 구현, 개발 | 0.5-0.9 | Sonnet/Opus |
+| **refactoring** | refactor, clean, restructure, 리팩토링, 정리 | 0.4-0.7 | Sonnet |
+| **testing** | test, coverage, validation, 테스트, 검증 | 0.3-0.5 | Sonnet |
+| **documentation** | document, explain, readme, 문서, 설명 | 0.2-0.4 | Haiku/Sonnet |
+| **performance** | optimize, speed, memory, 최적화, 성능 | 0.5-0.8 | Sonnet/Opus |
+| **security** | security, vulnerability, auth, 보안, 취약점 | 0.6-0.9 | Opus |
+| **data_processing** | data, transform, ETL, 데이터, 변환 | 0.4-0.7 | Sonnet |
 
-```python
-from classifiers.complexity_analyzer import ComplexityAnalyzer
+**Classification Output:**
 
-analyzer = ComplexityAnalyzer()
-complexity_result = analyzer.analyze(task_text, category=primary_category)
+```markdown
+## Classification Result
+
+**Task**: "Fix login page authentication error"
+
+**Category Analysis**:
+- Primary: bug_fix (85% confidence)
+- Secondary: security (30%)
+- Intent: DEBUG
+- Complexity: 0.55
+
+**Reasoning**:
+- Keywords "fix" and "error" → bug_fix
+- "authentication" suggests security concern
+- Single component (login page) → moderate complexity
+- Error fixing intent is clear → DEBUG
 ```
 
-This calculates:
-- **Scope score** - Single file vs. system-wide
-- **Dependency score** - Interconnections and integrations
-- **Technical depth** - Advanced concepts required
-- **Overall complexity** (0.0 to 1.0)
-- **Effort level** - low/medium/high/very_high
-- **Estimated time** - in minutes
+### Step 3: Routing Decision
 
-### Step 4: Urgency Assessment
+Based on classification, select:
 
-Check for urgency indicators in the task text against patterns in `routing_rules/categories.yaml`:
+#### A. Target Skill
 
-- **High**: "긴급", "urgent", "critical", "asap", "즉시", "hotfix"
-- **Medium**: "중요", "important", "priority", "우선"
-- **Low**: "나중에", "later", "eventually", "when possible"
+| Classification | Route To | Reasoning |
+|----------------|----------|-----------|
+| Simple sequential task (complexity < 0.7) | sequential-task-processor | Step-by-step execution with gates |
+| Independent parallel work | parallel-task-executor | Concurrent processing |
+| Complex multi-component (complexity >= 0.7) | dynamic-task-orchestrator | Dynamic decomposition |
+| Quality improvement focus | iterative-quality-enhancer | Iterative refinement |
 
+#### B. Model Selection
+
+**Cost-Optimized Model Selection:**
+
+```markdown
+## Model Selection Matrix
+
+### Claude Haiku (complexity < 0.4)
+- Simple documentation updates
+- Basic data transformations
+- Straightforward bug fixes
+- Quick information retrieval
+**Trade-off**: Fastest, cheapest, less capable
+
+### Claude Sonnet (complexity 0.4-0.7)
+- Standard feature development
+- Medium complexity refactoring
+- Most testing tasks
+- Performance analysis
+**Trade-off**: Balanced performance and cost (DEFAULT)
+
+### Claude Opus (complexity > 0.7)
+- Complex architecture design
+- Security-critical implementations
+- Large-scale system migrations
+- Novel problem solving
+**Trade-off**: Most capable, slowest, most expensive
+```
+
+## Complete Routing Example
+
+### Input Request
+"사용자 프로필에 프로필 이미지 업로드 및 크롭 기능을 추가해주세요. 이미지는 S3에 저장되어야 하고, 썸네일도 자동 생성되어야 합니다."
+
+### Classification Process
+
+```markdown
+## Classification: Profile Image Feature
+
+### 1. Category Analysis
+**Primary**: feature_development (90%)
+- Keywords: "추가", "기능"
+- Nature: Adding new capability
+
+**Secondary**: data_processing (40%)
+- Keywords: "저장", "생성"
+- Nature: Image transformation
+
+**Confidence**: High (90%)
+
+### 2. Intent Detection
+**Intent**: CREATE
+- Building new functionality from scratch
+- Multi-component feature
+
+**Underlying Goal**: Enable users to personalize profiles with images
+
+### 3. Complexity Assessment
+**Scope**: Multiple components
+- Frontend: Upload UI, crop interface
+- Backend: Upload handling, image processing
+- Infrastructure: S3 integration
+
+**Dependencies**: High
+- S3 AWS SDK
+- Image processing library (Sharp/ImageMagick)
+- Database schema updates
+
+**Technical Depth**: Advanced
+- Image manipulation algorithms
+- Cloud storage patterns
+- Async processing for thumbnails
+
+**Overall Complexity**: 0.78 (High)
+
+### 4. Urgency Level
+**Priority**: Medium
+- No urgency keywords detected
+- Standard feature request
+```
+
+### Routing Decision
+
+```markdown
 ## Routing Decision
 
-Combine all classification results to make a routing decision using `routing_rules/skill_mapping.json`:
+**Target Skill**: dynamic-task-orchestrator
+**Reasoning**:
+- Complexity 0.78 > 0.7 threshold
+- Multiple independent components
+- Requires dynamic task decomposition
+
+**Model**: Claude Opus
+**Reasoning**:
+- High complexity (0.78)
+- Multiple technical domains
+- Architecture decisions required
+
+**Priority**: Medium
+**Estimated Effort**: 90-120 minutes
+
+**Recommended Decomposition**:
+1. Frontend upload UI component
+2. Crop interface with preview
+3. Backend upload endpoint
+4. S3 integration service
+5. Image processing worker
+6. Thumbnail generation
+7. Database schema update
+8. Integration testing
+
+**Secondary Considerations**:
+- Security: Validate file types, size limits
+- Performance: Async thumbnail generation
+- Error handling: Upload failures, S3 connectivity
+```
+
+### Output to Next Skill
 
 ```json
 {
-  "task_id": "unique_task_id",
-  "classification": {
-    "primary": "category_name",
-    "secondary": ["category1", "category2"],
-    "confidence": 0.85
-  },
   "routing": {
-    "target_skill": "skill_name",
-    "model": "claude-3-sonnet",
+    "task_id": "task_profile_image_001",
+    "target_skill": "dynamic-task-orchestrator",
+    "model": "claude-opus",
     "priority": "medium"
   },
-  "metadata": {
-    "complexity_score": 0.65,
-    "estimated_minutes": 45,
-    "requires_clarification": false
+  "task_context": {
+    "original_request": "사용자 프로필에 프로필 이미지 업로드...",
+    "category": "feature_development",
+    "complexity": 0.78,
+    "intent": "CREATE",
+    "secondary_concerns": ["data_processing", "security"],
+    "estimated_minutes": 105
+  },
+  "recommendations": {
+    "decomposition_hint": ["frontend_ui", "backend_api", "infrastructure", "testing"],
+    "critical_paths": ["S3 integration", "image processing"],
+    "risk_factors": ["cloud service dependency", "image format compatibility"]
   }
 }
 ```
-
-### Skill Selection Rules
-
-Based on category and complexity:
-
-- **sequential-task-processor**
-  - Bug fixes (0.3-0.7 complexity)
-  - Security tasks
-  - Documentation
-  - Tasks requiring step-by-step execution
-
-- **parallel-executor**
-  - Testing (0.2-0.6 complexity)
-  - Data processing
-  - Independent batch operations
-
-- **dynamic-orchestrator**
-  - Feature development (0.7-1.0 complexity)
-  - Multi-component integration
-  - Complex refactoring
-
-- **quality-enhancer**
-  - Performance optimization (0.5-0.9 complexity)
-  - Refactoring
-  - Architecture improvements
-
-### Model Selection Rules
-
-Based on complexity score:
-
-- **claude-3-haiku** (complexity < 0.5)
-  - Simple bug fixes
-  - Basic data processing
-  - Simple documentation
-
-- **claude-3-sonnet** (complexity 0.5-0.7)
-  - Medium complexity features
-  - Refactoring
-  - Security tasks
-  - **Default choice for most tasks**
-
-- **claude-3-opus** (complexity > 0.7)
-  - Complex architecture design
-  - Large-scale migrations
-  - Critical security work
 
 ## Handling Low Confidence
 
-When confidence < 0.6, use the clarification template:
+When classification confidence is below 60%, request clarification:
 
-1. Read `templates/clarification_request.md`
-2. Fill in the template with classification results
-3. Ask the user specific questions to improve routing accuracy
-4. Re-classify with additional context
+```markdown
+## Clarification Request
 
-Example questions to ask:
-- Scope: "Does this affect a single file or multiple components?"
-- Priority: "How urgent is this task?"
-- Constraints: "Are there any technical constraints or requirements?"
-- Expected outcome: "What should the final result look like?"
+I've analyzed your request but need additional information for optimal routing.
+
+**Current Classification** (55% confidence):
+- Possible categories: bug_fix OR feature_development
+- Unclear aspects: Is this fixing existing behavior or adding new?
+
+**Questions to Clarify**:
+
+1. **Scope**: Is this affecting a single component or multiple parts of the system?
+   - [ ] Single file/component
+   - [ ] Multiple related components
+   - [ ] System-wide changes
+
+2. **Nature**: What best describes this task?
+   - [ ] Fixing something that's broken (bug_fix)
+   - [ ] Adding something that doesn't exist (feature_development)
+   - [ ] Improving something that works (refactoring/performance)
+
+3. **Priority**: How urgent is this?
+   - [ ] Critical - needs immediate attention
+   - [ ] High - important but not blocking
+   - [ ] Medium - standard priority
+   - [ ] Low - nice to have
+
+4. **Constraints**: Any specific requirements?
+   - Technical constraints (e.g., must use specific library)
+   - Time constraints (e.g., deadline)
+   - Compatibility requirements (e.g., backward compatible)
+
+Please provide these details so I can route your task optimally.
+```
 
 ## Integration with Other Skills
 
-### As Entry Point (Incoming)
+### As Entry Point
 
-The router receives tasks from:
-- Direct user requests
-- Orchestrator skills delegating sub-tasks
-- Other skills requesting classification
+The Router serves as the **gateway** to other skills:
 
-### As Dispatcher (Outgoing)
+```
+[User Request]
+       ↓
+[Intelligent Task Router] ─→ Sequential Processor
+       ↓                    → Parallel Executor
+       ↓                    → Dynamic Orchestrator
+       ↓                    → Quality Enhancer
+[Routing Decision + Context]
+```
 
-The router delegates tasks to:
-- **sequential-task-processor** - Linear workflows
-- **parallel-executor** - Concurrent operations
-- **dynamic-orchestrator** - Complex multi-step tasks
-- **quality-enhancer** - Code improvement tasks
+### Workflow Examples
 
-### Feedback Loop
+**1. Simple Bug Fix Flow:**
+```
+User: "Fix null pointer in UserService"
+       ↓
+Router: category=bug_fix, complexity=0.4, model=Sonnet
+       ↓
+Route to: sequential-task-processor
+       ↓
+Sequential executes: Analyze → Fix → Test → Document
+```
 
-Receive feedback from evaluator skills to improve routing:
-- Track which routings led to successful outcomes
-- Adjust classification weights based on results
-- Learn project-specific patterns over time
+**2. Complex Feature Flow:**
+```
+User: "Build real-time collaboration feature"
+       ↓
+Router: category=feature_development, complexity=0.85, model=Opus
+       ↓
+Route to: dynamic-task-orchestrator
+       ↓
+Orchestrator: Decomposes into 10 sub-tasks, assigns workers
+```
 
-## Usage Examples
-
-### Example 1: Simple Bug Fix
-
-**Input**: "로그인 페이지에서 버그 수정해주세요"
-
-**Classification**:
-- Primary: bug_fix (0.85)
-- Intent: debug
-- Complexity: 0.45 (medium)
-- Urgency: medium
-
-**Routing**:
-- Skill: sequential-task-processor
-- Model: claude-3-sonnet
-- Time: 45 minutes
-
-See `examples/bug_fix_routing.md` for complete analysis.
-
-### Example 2: Feature Development
-
-**Input**: "프로필 이미지 업로드 및 편집 기능 추가"
-
-**Classification**:
-- Primary: feature_development (0.85)
-- Secondary: data_processing (0.30)
-- Intent: create
-- Complexity: 0.75 (high)
-- Urgency: medium
-
-**Routing**:
-- Skill: dynamic-orchestrator
-- Model: claude-3-opus
-- Time: 90 minutes
-
-See `examples/feature_routing.md` for complete analysis.
+**3. Performance Optimization Flow:**
+```
+User: "Optimize database queries"
+       ↓
+Router: category=performance, complexity=0.6, model=Sonnet
+       ↓
+Route to: iterative-quality-enhancer
+       ↓
+Enhancer: Analyze → Optimize → Evaluate → Iterate
+```
 
 ## Best Practices
 
-### 1. Always Classify First
-Before starting any task, run it through the router to determine the optimal approach.
+### 1. Classify First, Always
+Every significant task should pass through the router. This ensures optimal resource allocation.
 
-### 2. Trust the Complexity Score
-Use the complexity score to select the appropriate model. Don't use Opus for simple tasks or Haiku for complex ones.
+### 2. Trust Complexity Scores
+Model selection based on complexity prevents:
+- Wasting resources (Opus for simple tasks)
+- Insufficient capability (Haiku for complex tasks)
 
 ### 3. Consider Secondary Categories
-Secondary categories indicate cross-cutting concerns. For example, a feature_development task with a security secondary category should include security review.
+A bug_fix with security secondary means security review is needed during fix.
 
-### 4. Ask for Clarification
-When confidence is low, always ask clarifying questions rather than guessing.
+### 4. Update Routing Rules
+As you learn project patterns:
+- Adjust complexity thresholds
+- Add project-specific categories
+- Refine model selection rules
 
-### 5. Update Routing Rules
-As you learn project-specific patterns, update `routing_rules/categories.yaml` and `routing_rules/skill_mapping.json`.
+### 5. Track Routing Outcomes
+Monitor which routings lead to success:
+- Did the selected skill complete the task?
+- Was the model choice appropriate?
+- Were complexity estimates accurate?
 
-### 6. Multi-step Tasks
-For complex tasks, route the overall task first, then route sub-tasks as they emerge during execution.
+Use this feedback to improve future routing.
 
-## Workflow
+## Edge Cases and Special Handling
 
-To use this skill for routing a task:
+### Multi-Category Tasks
 
-1. **Receive Task Request**
-   ```
-   Input: User's natural language task description
-   ```
+When task spans multiple categories equally:
 
-2. **Run Classification Pipeline**
-   ```python
-   # Keyword classification
-   keyword_result = keyword_classifier.classify(task)
+```markdown
+**Example**: "Refactor authentication module and add two-factor authentication"
 
-   # Intent detection
-   intent_result = intent_classifier.classify(task)
+**Categories**:
+- refactoring (50%): "Refactor" keyword
+- feature_development (45%): "add...authentication"
+- security (40%): "authentication", "two-factor"
 
-   # Complexity analysis
-   complexity_result = complexity_analyzer.analyze(task, category)
-
-   # Urgency detection
-   urgency = detect_urgency(task)
-   ```
-
-3. **Make Routing Decision**
-   ```python
-   # Consult routing_rules/skill_mapping.json
-   routing = determine_routing(
-       category=keyword_result['primary'],
-       complexity=complexity_result['complexity_score'],
-       urgency=urgency
-   )
-   ```
-
-4. **Check Confidence**
-   ```python
-   if confidence < 0.6:
-       # Use templates/clarification_request.md
-       request_clarification()
-   else:
-       # Proceed with routing
-       delegate_to_skill(routing['target_skill'])
-   ```
-
-5. **Execute via Routed Skill**
-   ```
-   Pass task to selected skill with routing metadata
-   ```
-
-6. **Collect Feedback**
-   ```
-   Track outcome for future routing improvements
-   ```
-
-## Reference Files
-
-- **routing_rules/categories.yaml** - Category definitions, keywords, and complexity weights
-- **routing_rules/skill_mapping.json** - Skill selection rules and model preferences
-- **templates/clarification_request.md** - Template for requesting task clarification
-- **examples/bug_fix_routing.md** - Complete routing example for bug fixes
-- **examples/feature_routing.md** - Complete routing example for feature development
-
-## Classifier Scripts
-
-- **classifiers/keyword_classifier.py** - Keyword-based category classification
-- **classifiers/intent_classifier.py** - User intent detection
-- **classifiers/complexity_analyzer.py** - Task complexity analysis
-
-All classifiers can be executed standalone for testing:
-
-```bash
-python classifiers/keyword_classifier.py
-python classifiers/intent_classifier.py
-python classifiers/complexity_analyzer.py
+**Resolution**:
+1. Primary: refactoring (highest score)
+2. Route to dynamic-task-orchestrator (multiple concerns)
+3. Include sub-routing for each aspect
 ```
 
-## Adapting to Your Project
+### Urgent vs. Complex
 
-To customize the router for your specific project:
+When urgency conflicts with complexity:
 
-1. **Add Project-Specific Categories**
-   - Edit `routing_rules/categories.yaml`
-   - Add new categories with keywords and weights
+```markdown
+**Example**: "URGENT: Fix critical security vulnerability"
 
-2. **Define Custom Skills**
-   - Edit `routing_rules/skill_mapping.json`
-   - Map categories to your available skills
+**Analysis**:
+- Urgency: CRITICAL (override normal priority)
+- Complexity: 0.75 (normally → Opus)
+- Category: security (high-stakes)
 
-3. **Adjust Complexity Thresholds**
-   - Modify complexity_weight in categories
-   - Tune model selection thresholds
-
-4. **Create Domain Templates**
-   - Add templates for common clarification scenarios
-   - Customize `templates/clarification_request.md`
-
-## Output Format
-
-The router should output a structured routing decision:
-
-```json
-{
-  "task_id": "task_20250111_001",
-  "original_request": "User's request text",
-  "classification": {
-    "primary": "bug_fix",
-    "secondary": ["security"],
-    "confidence": 0.85,
-    "intent": "debug"
-  },
-  "routing": {
-    "target_skill": "sequential-task-processor",
-    "model": "claude-3-sonnet",
-    "priority": "medium"
-  },
-  "analysis": {
-    "complexity_score": 0.45,
-    "scope_score": 0.3,
-    "dependency_score": 0.4,
-    "technical_depth_score": 0.5,
-    "effort_level": "medium",
-    "estimated_minutes": 45,
-    "urgency": "medium"
-  },
-  "metadata": {
-    "requires_clarification": false,
-    "timestamp": "2025-01-11T10:30:00Z",
-    "router_version": "1.0.0"
-  }
-}
+**Decision**:
+- Model: Claude Opus (critical security needs best)
+- Priority: Immediate
+- But: Consider if simpler mitigation exists first
 ```
 
----
+### Unknown Task Types
 
-*This skill implements the Routing pattern from [Building Effective Agents](https://www.anthropic.com/engineering/building-effective-agents) by Anthropic.*
+When task doesn't fit categories:
+
+```markdown
+**Example**: "Deploy to production"
+
+**Analysis**:
+- No direct category match
+- Keywords suggest: operations, infrastructure
+
+**Handling**:
+1. Default to medium complexity
+2. Ask for clarification
+3. Consider adding "devops" category if pattern repeats
+```
+
+## Performance Considerations
+
+### Routing Overhead
+
+- Classification: ~1-2 seconds
+- Model selection: ~0.5 seconds
+- Context preparation: ~1 second
+- **Total overhead**: ~3-4 seconds
+
+**Worth it when**: Task execution time >> routing overhead
+
+### When to Skip Routing
+
+- Explicitly simple tasks
+- User specifies exact approach
+- Repeated identical tasks (cache routing decision)
+
+## Customization
+
+### Adding Custom Categories
+
+```markdown
+## New Category: api_integration
+
+**Keywords**: API, integration, external, third-party, endpoint
+**Default Complexity**: 0.5-0.7
+**Typical Model**: Sonnet
+**Default Skill**: sequential-task-processor
+
+**When to Use**:
+- Connecting to external services
+- Implementing API clients
+- Handling API authentication
+```
+
+### Adjusting Thresholds
+
+Based on project needs:
+- Lower Opus threshold for security-critical projects
+- Raise Haiku threshold for cost-sensitive environments
+- Add project-specific keywords for better classification
+
+## Summary
+
+The Intelligent Task Router implements Anthropic's Routing pattern by:
+
+1. **Classifying** incoming tasks across multiple dimensions
+2. **Analyzing** complexity, intent, and urgency
+3. **Selecting** optimal downstream skill based on task characteristics
+4. **Choosing** appropriate model (Haiku/Sonnet/Opus) for cost-capability balance
+5. **Providing** rich context for downstream skills
+
+This pattern excels when different task types benefit from specialized handling, and when upfront classification cost is offset by downstream efficiency gains.
+
+**Remember**: The router is a **dispatcher**, not an executor. Its value is in intelligent delegation, not task completion.
