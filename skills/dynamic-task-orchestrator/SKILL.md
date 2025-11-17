@@ -1,492 +1,703 @@
 ---
 name: dynamic-task-orchestrator
-description: Implement Anthropic's Orchestrator-Workers pattern to dynamically decompose complex projects and coordinate specialized workers. Use this skill when tackling multi-faceted software projects requiring architecture design, implementation, testing, documentation, and optimization. The skill excels at adaptive planning and real-time task reallocation across code analysis, system design, development, testing, documentation, and performance optimization.
+description: Implements Anthropic's Orchestrator-Workers pattern where a central LLM dynamically breaks down complex tasks, delegates to specialized worker LLMs, and synthesizes results. Use for open-ended problems where subtask number and nature are unpredictable. Ideal for complex projects (0.7+ complexity) requiring adaptive planning.
 ---
 
-# Dynamic Task Orchestrator
+# Dynamic Task Orchestrator (Orchestrator-Workers Pattern)
 
 ## Overview
 
-This skill implements the Orchestrator-Workers pattern from Anthropic's "Building Effective Agents" framework. It dynamically decomposes complex software projects into manageable tasks and coordinates six specialized workers to execute them efficiently.
+This skill implements the **Orchestrator-Workers** workflow pattern from Anthropic's "Building Effective Agents". The core principle is that a central orchestrator LLM **dynamically** breaks down tasks, delegates to worker LLMs, and synthesizes results - with the key distinction that **subtasks are not predetermined**.
 
-**Core Principle:** One central orchestrator analyzes the project, creates an adaptive execution plan, assigns tasks to specialized workers, and dynamically adjusts the plan based on real-time feedback.
+**Reference**: https://www.anthropic.com/engineering/building-effective-agents
+
+### Key Principle
+
+> "Orchestrator-Workers: A central LLM dynamically breaks down tasks, delegates them to worker LLMs, and synthesizes their results."
+
+**Critical Distinction from Parallelization:**
+> "The key difference from parallelization is its flexibility—subtasks aren't pre-defined, but determined by the orchestrator based on the specific input."
+
+**Trade-off**: Complexity for adaptability in handling open-ended problems.
 
 ## When to Use This Skill
 
-**이 스킬은 복잡도 0.7+ 프로젝트를 6개 내부 워커(Analyzer, Architect, Developer, Tester, Documenter, Optimizer)로 분해하여 실행합니다.**
+**Ideal scenarios:**
+- **Open-ended problems** with unpredictable subtask requirements
+- Complex projects where **number and nature of subtasks** depend on input
+- Tasks requiring **adaptive decomposition** as work progresses
+- **Multi-faceted projects** needing coordinated specialists
 
-Use this skill when:
-- **복잡도 >= 0.7인 전체 프로젝트 (전체 스택, 마이크로서비스, 대규모 마이그레이션)**
-- Building a complete application from scratch (web apps, APIs, full-stack systems)
-- Migrating legacy systems to modern architectures (monolith to microservices)
-- Refactoring large codebases with multiple concerns (architecture + code + tests + docs)
-- Projects requiring coordination across analysis, design, implementation, testing, and documentation
-- Complex tasks where single-agent approaches struggle with context or specialization
+**Concrete examples:**
+- "Build an e-commerce platform" → Unknown number of services until analyzed
+- "Refactor this legacy codebase" → Discover issues during analysis
+- "Create a data pipeline" → Requirements emerge from data inspection
+- Complex coding tasks that touch multiple files dynamically
 
-**Do not use for:**
-- Simple, single-concern tasks (use individual agents instead)
-- Quick bug fixes or minor edits
-- Tasks requiring deep domain expertise beyond software engineering
-- **복잡도 < 0.7 작업 (이 경우 agent-workflow-manager의 Simple/Parallel 패턴 사용)**
+**Do NOT use when:**
+- Subtasks are **predetermined and fixed** → Use Sequential or Parallel
+- Simple, well-defined tasks
+- Low complexity (< 0.7) where overhead isn't justified
+- Tasks with no natural delegation boundaries
 
-## Core Capabilities
+## Core Workflow: Dynamic Orchestration
 
-### 1. Dynamic Project Analysis
+### The Orchestration Loop
 
-Analyze incoming projects in real-time to understand:
-- Project type (web app, CLI tool, library, API, full-stack)
-- Existing codebase structure and dependencies
-- Requirements and constraints
-- Complexity level and estimated effort
+```
+[Complex Task]
+       ↓
+[Orchestrator: Analyze & Plan]
+       ↓
+[Dynamic Decomposition] ─→ Subtask 1 → [Worker 1] → Result 1
+       ↓                   Subtask 2 → [Worker 2] → Result 2
+       ↓                   ...discovered as work progresses...
+       ↓                   Subtask N → [Worker N] → Result N
+       ↓
+[Orchestrator: Synthesize Results]
+       ↓
+[Orchestrator: Assess Completion]
+       ↓ (not complete)
+[Orchestrator: Identify Next Subtasks] ← (loop back)
+       ↓ (complete)
+[Final Deliverable]
+```
 
-### 2. Adaptive Task Decomposition
+**Key Feature**: The orchestrator **discovers** subtasks as it goes, not all at once.
 
-Break down projects into specialized subtasks:
-- Identify which workers are needed for each phase
-- Establish task dependencies and execution order
-- Create priority queues for parallel execution
-- Dynamically adjust decomposition based on discoveries
+### Step 1: Initial Analysis
 
-### 3. Intelligent Worker Selection
+```markdown
+## Orchestrator: Initial Analysis
 
-Select optimal workers based on:
-- Current project state and needs
-- Worker specialization and capabilities
-- Task dependencies and prerequisites
-- Worker availability and load balancing
+### Task
+[Complex task description]
 
-### 4. Real-Time Orchestration
+### Initial Assessment
+**Complexity**: [High - 0.7+]
+**Type**: [open-ended / partially defined / evolving]
+**Estimated Workers Needed**: [initial guess, will adapt]
 
-Coordinate workers through:
-- Task assignment with clear objectives
-- Shared execution context (state, decisions, artifacts)
-- Inter-worker communication and collaboration
-- Progress monitoring and bottleneck detection
-- Adaptive replanning when issues arise
+### Known Requirements
+1. [Requirement 1]
+2. [Requirement 2]
+3. ... (may discover more during execution)
 
-### 5. Context Synchronization
+### Unknown Factors
+- [What needs investigation]
+- [What will be discovered during work]
+- [Potential scope changes]
 
-Maintain coherent project state:
-- Centralized knowledge base of decisions and artifacts
-- Worker-to-worker context sharing
-- Checkpoint management for recovery
-- Consistent naming, patterns, and conventions across workers
+### Initial Subtask Identification
+Based on current understanding, first subtasks:
+1. **Subtask A**: [Description] → Assign to [Worker type]
+2. **Subtask B**: [Description] → Assign to [Worker type]
+(More subtasks will emerge as we proceed)
+
+### Execution Strategy
+- Start with analysis/investigation
+- Dynamically add subtasks as scope becomes clearer
+- Reassess and replan after each worker completes
+```
+
+### Step 2: Worker Delegation
+
+Delegate to specialized workers:
+
+```markdown
+## Worker Assignment: [Subtask Name]
+
+### Orchestrator → Worker Message
+**Worker Type**: [Code Analyzer / Architect / Developer / Tester / Documenter / Optimizer]
+**Task**: [Specific task for this worker]
+**Context**: [What this worker needs to know]
+**Expected Output**: [What to return]
+
+### Worker Execution
+[Worker performs specialized task]
+
+### Worker → Orchestrator Report
+**Status**: [Complete/Partial/Blocked]
+**Results**: [What was accomplished]
+**Discoveries**: [New information uncovered]
+**Recommendations**: [Suggested next steps]
+**New Subtasks Identified**: [Tasks discovered during this work]
+```
+
+### Step 3: Dynamic Replanning
+
+After each worker completes:
+
+```markdown
+## Orchestrator: Replan
+
+### Worker Results Integration
+- Worker [X] completed [task]
+- New information: [discoveries]
+- New subtasks identified: [list]
+
+### Updated Task List
+1. [x] Subtask A - Complete
+2. [x] Subtask B - Complete
+3. [ ] Subtask C - **NEW** (discovered during A)
+4. [ ] Subtask D - **NEW** (discovered during B)
+5. [ ] Subtask E - Original, now reprioritized
+
+### Next Actions
+- **Immediate**: Assign Subtask C to [Worker type]
+- **Following**: Subtask D depends on C, queue after
+- **Reassess after**: E may change based on C/D results
+
+### Scope Assessment
+- Original estimate: 5 subtasks
+- Current count: 8 subtasks (and counting)
+- Complexity increased/decreased: [assessment]
+```
+
+### Step 4: Result Synthesis
+
+Combine all worker outputs:
+
+```markdown
+## Orchestrator: Final Synthesis
+
+### All Completed Subtasks
+1. Subtask A by Code Analyzer → [result]
+2. Subtask B by Architect → [result]
+3. Subtask C by Developer → [result]
+... (all N subtasks)
+
+### Integration Points
+- How Worker 1's output connects to Worker 2's
+- Dependencies resolved
+- Conflicts reconciled
+
+### Coherence Check
+- All results consistent: [Yes/No]
+- Missing pieces: [None / List]
+- Quality assessment: [Score]
+
+### Final Deliverable
+[Synthesized output combining all worker results into cohesive whole]
+
+### Execution Summary
+- Total subtasks: N (started with estimate of M)
+- Workers used: [list]
+- Replanning cycles: [count]
+- Total time: [duration]
+- Adaptive decisions: [key pivots made]
+```
 
 ## Specialized Workers
 
 ### 1. Code Analyzer Worker
+**Purpose**: Investigate and understand existing code
 
-**Role:** Analyze existing codebases to extract architecture, dependencies, and patterns.
+```markdown
+### Worker: Code Analyzer
+**Input**: Source code or codebase path
+**Analysis Tasks**:
+- Map dependencies and imports
+- Identify architectural patterns
+- Detect anti-patterns and tech debt
+- Measure complexity metrics
 
-**Capabilities:**
-- Dependency analysis (imports, packages, relationships)
-- Code quality assessment (complexity, duplication, anti-patterns)
-- Architecture extraction (layers, modules, design patterns)
-- Technology stack identification
+**Output**:
+```markdown
+## Code Analysis Report
 
-**Triggers:** `existing_project`, `refactoring`, `migration`, `legacy_code`
+### Structure
+[Directory layout and module organization]
 
-**Output:** Analysis report with structure, dependencies, quality metrics, and recommendations.
+### Dependencies
+[External and internal dependency graph]
+
+### Patterns Found
+[Design patterns, architectural style]
+
+### Quality Issues
+[Anti-patterns, duplication, complexity hotspots]
+
+### Recommendations
+[Suggested improvements]
+
+### Discovered Subtasks
+- Refactor module X (high complexity)
+- Update deprecated dependency Y
+- Add missing tests for Z
+```
+```
 
 ### 2. System Architect Worker
+**Purpose**: Design system structure and specifications
 
-**Role:** Design system architecture and technical specifications.
+```markdown
+### Worker: System Architect
+**Input**: Requirements and analysis
+**Design Tasks**:
+- Define component structure
+- Create API contracts
+- Design data models
+- Document architecture decisions
 
-**Capabilities:**
-- Component design (modules, services, layers)
-- API specification (endpoints, schemas, contracts)
-- Database modeling (entities, relationships, migrations)
-- Architecture decision records (ADRs)
+**Output**:
+```markdown
+## Architecture Design
 
-**Triggers:** `new_project`, `architecture_change`, `system_design`
+### System Components
+[High-level component diagram]
 
-**Output:** Architecture diagrams, API specs, database schemas, technology choices.
+### API Specification
+[Endpoints, request/response formats]
+
+### Data Models
+[Entities, relationships, schemas]
+
+### Technology Decisions
+[Stack choices with rationale]
+
+### Discovered Subtasks
+- Implement authentication service
+- Create database migrations
+- Set up API gateway
+```
+```
 
 ### 3. Code Developer Worker
+**Purpose**: Implement features and write code
 
-**Role:** Implement features, fix bugs, and write production code.
+```markdown
+### Worker: Code Developer
+**Input**: Architecture specs and requirements
+**Implementation Tasks**:
+- Write production code
+- Implement business logic
+- Create integrations
+- Fix bugs
 
-**Capabilities:**
-- Feature implementation (following specs and patterns)
-- Bug fixing (diagnosis and resolution)
-- Integration (connecting components and services)
-- Code review (quality and consistency checks)
+**Output**:
+```markdown
+## Implementation Complete
 
-**Triggers:** `implementation_needed`, `code_generation`, `bug_fix`, `feature_request`
+### Files Created/Modified
+[List of changes]
 
-**Output:** Working code, implementation notes, integration points.
+### Key Implementation Details
+[Important design choices made]
+
+### Integration Points
+[How this connects to other components]
+
+### Discovered Subtasks
+- Frontend needs error handling for API X
+- Database needs index for query Y
+- Need validation for input Z
+```
+```
 
 ### 4. Test Engineer Worker
+**Purpose**: Ensure quality through testing
 
-**Role:** Create and execute comprehensive test suites.
+```markdown
+### Worker: Test Engineer
+**Input**: Implementation and requirements
+**Testing Tasks**:
+- Create unit tests
+- Write integration tests
+- Perform edge case testing
+- Measure coverage
 
-**Capabilities:**
-- Unit test creation (coverage and edge cases)
-- Integration testing (component interactions)
-- Performance testing (benchmarks and profiling)
-- Test automation (CI/CD integration)
+**Output**:
+```markdown
+## Test Report
 
-**Triggers:** `code_complete`, `quality_assurance`, `testing_needed`, `regression`
+### Tests Created
+[List of test files]
 
-**Output:** Test files, coverage reports, performance benchmarks.
+### Coverage
+[Coverage percentage and gaps]
+
+### Issues Found
+[Bugs or problems discovered]
+
+### Discovered Subtasks
+- Fix bug in authentication flow
+- Add validation for edge case X
+- Improve error messages for Y
+```
+```
 
 ### 5. Documentation Writer Worker
+**Purpose**: Create clear documentation
 
-**Role:** Generate clear, comprehensive documentation.
+```markdown
+### Worker: Documentation Writer
+**Input**: Code and architecture
+**Documentation Tasks**:
+- Write README
+- Create API docs
+- Document setup process
+- Add code comments
 
-**Capabilities:**
-- API documentation (endpoints, parameters, examples)
-- User guides (setup, usage, troubleshooting)
-- Code comments (inline explanations)
-- README files (overview, installation, quick start)
+**Output**:
+```markdown
+## Documentation Complete
 
-**Triggers:** `feature_complete`, `documentation_gap`, `api_change`, `release`
+### Documents Created
+[README.md, API.md, etc.]
 
-**Output:** Markdown docs, API references, user guides, code comments.
+### Coverage
+[What's documented]
+
+### Discovered Subtasks
+- Need examples for complex API endpoint
+- Missing deployment instructions
+- Unclear error code documentation
+```
+```
 
 ### 6. Performance Optimizer Worker
+**Purpose**: Improve performance and efficiency
 
-**Role:** Identify and resolve performance bottlenecks.
+```markdown
+### Worker: Performance Optimizer
+**Input**: Code and performance requirements
+**Optimization Tasks**:
+- Profile performance
+- Identify bottlenecks
+- Optimize algorithms
+- Improve resource usage
 
-**Capabilities:**
-- Bottleneck identification (profiling and analysis)
-- Algorithm optimization (time and space complexity)
-- Resource optimization (memory, CPU, I/O)
-- Code refactoring (maintainability and efficiency)
+**Output**:
+```markdown
+## Optimization Report
 
-**Triggers:** `performance_issue`, `optimization_needed`, `scalability_concern`
+### Performance Analysis
+[Profiling results]
 
-**Output:** Optimized code, performance reports, refactoring recommendations.
+### Bottlenecks Identified
+[Slow operations, memory issues]
 
-## Orchestration Workflow
+### Optimizations Applied
+[Changes made]
 
-### Phase 1: Project Intake
-
-1. Receive project request with requirements and constraints
-2. Determine orchestration mode: `autonomous`, `guided`, or `collaborative`
-3. Perform initial project analysis using Code Analyzer (if existing code)
-4. Create initial execution plan with task breakdown
-
-### Phase 2: Dynamic Execution
-
+### Discovered Subtasks
+- Database queries need indexing
+- Caching layer needed for API
+- Memory leak in component X
 ```
-while project is not complete:
-    1. Assess current project state
-    2. Select next optimal worker(s) based on:
-       - Task priorities
-       - Dependencies satisfied
-       - Worker availability
-    3. Generate worker-specific task with context
-    4. Execute worker task
-    5. Integrate worker results into project state
-    6. Update execution context
-    7. Check if replanning is needed:
-       - New dependencies discovered
-       - Unexpected blockers
-       - Scope changes
-    8. If replanning needed: adjust execution plan
-    9. Checkpoint progress
 ```
 
-### Phase 3: Project Finalization
+## Complete Example: E-Commerce Platform
 
-1. Verify all deliverables are complete
-2. Run final quality checks (tests, docs, code quality)
-3. Generate project summary with worker contributions
-4. Recommend next steps or evaluator skill
+### Task
+"Build an e-commerce platform with product catalog, shopping cart, and checkout"
 
-## Usage Examples
+### Orchestrator: Initial Analysis
 
-### Example 1: Building a Todo App
+```markdown
+## Initial Assessment
 
-**Input:**
-```json
-{
-  "task_id": "todo-app-001",
-  "project": {
-    "name": "Simple Todo App",
-    "type": "web_app",
-    "requirements": [
-      "Create, read, update, delete todos",
-      "Mark todos as complete",
-      "Filter by status"
-    ],
-    "constraints": ["Use React and Express", "SQLite database"]
-  },
-  "orchestration_mode": "autonomous"
-}
+**Task**: E-commerce platform
+**Complexity**: 0.85 (High)
+**Type**: Open-ended with multiple unknowns
+
+### Known Requirements
+- Product catalog browsing
+- Shopping cart functionality
+- Checkout process
+- (Payment integration? Inventory management? User accounts? - TO DISCOVER)
+
+### Initial Subtasks
+1. **Analyze scope** → Code Analyzer (even for new project, analyze requirements)
+2. **Design architecture** → System Architect
+
+(More subtasks will emerge from these initial analyses)
 ```
 
-**Execution Flow:**
-1. **Architect Worker:** Design API endpoints, database schema, component structure
-2. **Developer Worker:** Implement backend API (Express + SQLite)
-3. **Developer Worker:** Implement frontend components (React)
-4. **Test Engineer:** Write unit and integration tests
-5. **Documentation Writer:** Create README and API docs
-6. **Performance Optimizer:** (Optional) Optimize if performance issues detected
+### Phase 1: Discovery
 
-### Example 2: Migrating Monolith to Microservices
+```markdown
+## Worker: System Architect - Scope Analysis
 
-**Input:**
-```json
-{
-  "task_id": "migration-002",
-  "project": {
-    "name": "E-commerce Migration",
-    "type": "full_stack",
-    "requirements": ["Extract user service", "Extract product service", "Extract order service"],
-    "existing_code": "path/to/monolith"
-  },
-  "orchestration_mode": "guided"
-}
+**Task**: Define complete scope for e-commerce platform
+
+**Discoveries**:
+- Need user authentication system
+- Need inventory management
+- Need order tracking
+- Need payment gateway integration
+- Need admin dashboard
+
+**Recommended Architecture**:
+- Microservices: User, Product, Cart, Order, Payment
+- Database: PostgreSQL with Redis cache
+- Frontend: React with state management
+
+**New Subtasks Identified**:
+1. Design User Service API
+2. Design Product Service API
+3. Design Cart Service API
+4. Design Order Service API
+5. Design Payment Service integration
+6. Design Admin Dashboard
 ```
 
-**Execution Flow:**
-1. **Code Analyzer:** Analyze monolith structure, dependencies, coupling
-2. **Architect Worker:** Design microservices architecture, API contracts, data migration
-3. **Developer Worker:** Extract user service code
-4. **Test Engineer:** Create tests for user service
-5. **Developer Worker:** Extract product service code
-6. **Test Engineer:** Create tests for product service
-7. **Developer Worker:** Extract order service code
-8. **Test Engineer:** Create tests for order service
-9. **Documentation Writer:** Document each service and migration guide
-10. **Performance Optimizer:** Optimize inter-service communication
+### Orchestrator: Replan (First Cycle)
 
-## Orchestration Modes
+```markdown
+## Updated Plan
 
-### Autonomous Mode
-Orchestrator makes all decisions independently. Best for well-defined projects with clear requirements.
+**Original estimate**: 3-4 main components
+**New reality**: 6 services + admin dashboard + integrations
 
-### Guided Mode
-Orchestrator seeks user approval before major decisions (architecture choices, technology stack, replanning). Best for projects with flexibility or uncertainty.
+### Revised Subtask List
+1. [x] Initial scope analysis - Complete
+2. [ ] User Service (auth, profiles)
+3. [ ] Product Service (catalog, inventory)
+4. [ ] Cart Service (session, persistence)
+5. [ ] Order Service (checkout, tracking)
+6. [ ] Payment integration (Stripe/PayPal)
+7. [ ] Admin Dashboard
+8. [ ] Frontend components
+9. [ ] Integration testing
+10. [ ] Documentation
 
-### Collaborative Mode
-Orchestrator involves user throughout execution with checkpoints and decision points. Best for learning or when user expertise is critical.
+### Execution Order
+1. Parallel: User Service + Product Service (independent)
+2. Then: Cart Service (depends on both)
+3. Then: Order Service (depends on cart)
+4. Then: Payment (depends on order)
+5. Parallel: Admin + Frontend (can start partially earlier)
+6. Final: Integration + Docs
+```
 
-## Advanced Features
+### Phase 2: Implementation (Dynamic)
 
-### Adaptive Replanning
-- Real-time complexity reassessment
-- Worker performance-based task reallocation
-- Dynamic dependency adjustment when new dependencies discovered
+```markdown
+## Worker: Code Developer - User Service
 
-### Worker Collaboration
-- Direct worker-to-worker communication for coordination
-- Shared knowledge base maintained across workers
-- Cross-worker code review for quality
+**Implementation**: JWT auth, user CRUD, profile management
 
-### Intelligent Delegation
-- Worker expertise profiling based on past performance
-- Optimal task-worker matching algorithm
-- Load balancing across workers
+**Discoveries During Implementation**:
+- Need email verification flow
+- Need password reset functionality
+- Need role-based access control (RBAC)
+- Need rate limiting for auth endpoints
 
-### Progress Monitoring
-- Real-time execution dashboard
-- Bottleneck detection and early warning
-- Dynamic ETA updates
+**New Subtasks**:
+- Implement email service
+- Add RBAC middleware
+- Configure rate limiter
+```
 
-### Failure Recovery
-- Automatic task reassignment on worker failure
-- Partial result recovery mechanisms
-- Graceful degradation strategies
+### Orchestrator: Replan (Second Cycle)
 
-## Resources
+```markdown
+## Updated Plan
 
-### scripts/
+**Discovery**: Email service needed across multiple services
 
-The `scripts/` directory contains the core orchestration engine and worker implementations:
+### New Subtasks Added
+11. [ ] Email Service (shared infrastructure)
+12. [ ] RBAC Middleware (security layer)
+13. [ ] Rate Limiting (infrastructure)
 
-- `orchestrator/orchestration_engine.py` - Main orchestration logic
-- `orchestrator/task_decomposer.py` - Project decomposition algorithms
-- `orchestrator/worker_selector.py` - Worker selection and matching
-- `orchestrator/adaptive_planner.py` - Dynamic replanning engine
-- `workers/base_worker.py` - Base worker interface
-- `workers/code_analyzer_worker.py` - Code analysis worker
-- `workers/architect_worker.py` - Architecture design worker
-- `workers/developer_worker.py` - Implementation worker
-- `workers/tester_worker.py` - Testing worker
-- `workers/documenter_worker.py` - Documentation worker
-- `workers/optimizer_worker.py` - Performance optimization worker
-- `state_management/project_state.py` - Project state tracking
-- `state_management/context_manager.py` - Shared context management
-- `state_management/checkpoint_manager.py` - Progress checkpointing
-- `communication/worker_protocol.py` - Inter-worker communication protocol
-- `communication/message_bus.py` - Message routing and delivery
+### Reprioritization
+- Email Service: Move to high priority (blocks User Service completion)
+- RBAC: Needed before other services
+- This affects timeline: +2 days estimated
+```
 
-### references/
+### Phase 3: Synthesis
 
-The `references/` directory contains detailed guides and examples:
+After all workers complete (with many replanning cycles):
 
-- `worker_protocol.md` - Worker communication protocol specification
-- `orchestration_patterns.md` - Common orchestration patterns and strategies
-- `saas_platform_example.md` - Complete SaaS platform orchestration example
-- `microservice_migration_example.md` - Monolith to microservices migration example
+```markdown
+## Final Synthesis
 
-### Integration with Other Skills
+### Completed Work
+- 6 microservices implemented and tested
+- Shared infrastructure (email, auth, rate limiting)
+- Admin dashboard
+- Frontend application
+- Integration tests
+- Full documentation
 
-- **Receives from:** Task routing skills for complex projects
-- **Delegates to:** Sequential task processor for ordered workflows, parallel executor for independent tasks
-- **Sends to:** Evaluator skills for quality assessment and final validation
+### Total Subtasks Executed: 23
+(Started with estimate of 10, grew through discovery)
 
-## Output Format
+### Worker Contributions
+- Code Analyzer: 2 analysis tasks
+- System Architect: 8 design tasks
+- Code Developer: 15 implementation tasks
+- Test Engineer: 10 testing tasks
+- Documentation Writer: 3 documentation tasks
+- Performance Optimizer: 2 optimization tasks
 
-```json
-{
-  "task_id": "string",
-  "execution_summary": {
-    "total_workers_used": 6,
-    "total_subtasks": 25,
-    "execution_time": "2h 15m",
-    "replanning_count": 3
-  },
-  "project_deliverables": {
-    "source_code": ["path/to/files"],
-    "tests": ["path/to/tests"],
-    "documentation": ["path/to/docs"],
-    "deployment": ["path/to/config"]
-  },
-  "worker_contributions": {
-    "code_analyzer": { "tasks_completed": 3, "artifacts_created": ["analysis_report.md"] },
-    "architect": { "tasks_completed": 5, "artifacts_created": ["architecture.md", "api_spec.yaml"] },
-    "developer": { "tasks_completed": 10, "artifacts_created": ["src/**/*.js"] },
-    "tester": { "tasks_completed": 4, "artifacts_created": ["tests/**/*.test.js"] },
-    "documenter": { "tasks_completed": 2, "artifacts_created": ["README.md", "API.md"] },
-    "optimizer": { "tasks_completed": 1, "artifacts_created": ["performance_report.md"] }
-  },
-  "next_skill_recommendation": "evaluator",
-  "project_state": "completed"
-}
+### Replanning Cycles: 7
+Key pivots:
+1. Added email service infrastructure
+2. Expanded RBAC requirements
+3. Split payment service from order service
+4. Added caching layer for product catalog
+5. Redesigned checkout flow after testing
+6. Added monitoring and logging infrastructure
+7. Extended admin capabilities
+
+### Final Deliverable
+Complete e-commerce platform with:
+- Scalable microservices architecture
+- Comprehensive test coverage (85%)
+- Full API documentation
+- Deployment configuration
+- Admin dashboard
+- Performance optimized
+
+### Adaptive Value Demonstrated
+Original monolithic approach would have missed:
+- Infrastructure needs (discovered in implementation)
+- Security requirements (discovered in testing)
+- Performance bottlenecks (discovered in optimization)
+- Edge cases (discovered throughout)
+```
+
+## Integration with Other Skills
+
+### From Router
+```
+Router: Complex task detected (0.85 complexity)
+→ Route to: dynamic-task-orchestrator
+→ Context: Open-ended, needs adaptive planning
+```
+
+### With Sequential Processor
+```
+Orchestrator: "This subtask is sequential"
+→ Delegate to: sequential-task-processor for Worker X
+→ Worker executes with gates
+→ Return results to orchestrator
+```
+
+### With Parallel Executor
+```
+Orchestrator: "These subtasks are independent"
+→ Delegate to: parallel-task-executor
+→ Run Workers A, B, C simultaneously
+→ Return merged results to orchestrator
+```
+
+### To Evaluator
+```
+Orchestrator: "All work complete"
+→ Send to: iterative-quality-enhancer
+→ Request: "Evaluate entire project quality"
+→ Receive: Improvement suggestions
+→ Orchestrator may trigger more workers based on feedback
 ```
 
 ## Best Practices
 
-1. **Start Simple:** Begin with core workers (analyzer, architect, developer) before adding specialized workers
-2. **Checkpoint Often:** Save progress regularly to enable recovery and rollback
-3. **Monitor Context:** Keep shared context lean to avoid overwhelming workers
-4. **Validate Early:** Run tests and quality checks as soon as code is written
-5. **Document Decisions:** Record architecture decisions and rationale for future reference
-6. **Replan Proactively:** Adjust plan early when issues detected, not after failures
-7. **Balance Load:** Distribute tasks evenly across workers to avoid bottlenecks
+### 1. Embrace Adaptive Planning
+The whole point is **dynamic decomposition**. Don't try to plan everything upfront - plan to replan.
 
----
+### 2. Workers Report Discoveries
+Every worker should report:
+- What they accomplished
+- What they discovered
+- New subtasks needed
+This feeds the adaptive loop.
 
-## 통합 워크플로우 모드 (Integrated Workflow Mode)
+### 3. Maintain Coherent Context
+Orchestrator must ensure all workers have necessary context:
+- Shared decisions
+- Common patterns
+- Integration points
 
-### 개요
+### 4. Checkpoint Progress
+Save state after each worker completes:
+- Enables recovery from failures
+- Allows rollback if needed
+- Provides audit trail
 
-Orchestrator가 Router와 Evaluator 기능을 내장하여 전체 워크플로우를 자동 관리합니다.
+### 5. Know When to Stop
+Orchestrator must recognize:
+- Diminishing returns
+- Scope creep
+- When "good enough" is reached
 
-### 활성화 조건
+### 6. Balance Workers
+Don't over-specialize:
+- One worker doing 80% defeats purpose
+- Load balance across specialists
 
-- Complexity >= 0.7
-- 다중 컴포넌트 프로젝트
-- 전체 스택 개발
-- `/workflow-complex` 커맨드 사용
+## Error Handling
 
-### 자동 Classification (Router 기능 내장)
+### Worker Failure
 
-```bash
-# 작업 분석
-CATEGORY=$(analyze_category "$USER_REQUEST")
-COMPLEXITY=$(calculate_complexity "$USER_REQUEST")
-WORKER_COUNT=$(estimate_workers "$COMPLEXITY")
+```markdown
+## Orchestrator: Worker Failure Handling
 
-echo "✓ Category: $CATEGORY"
-echo "✓ Complexity: $COMPLEXITY"
-echo "✓ Workers: $WORKER_COUNT개"
+**Scenario**: Developer Worker failed on Service X implementation
+
+**Recovery Options**:
+1. **Retry**: Same worker, same task (transient failure)
+2. **Reassign**: Different worker approach (systematic issue)
+3. **Decompose further**: Break task into smaller pieces
+4. **Escalate**: Request human input
+
+**Action Taken**: [Choice with rationale]
+**Impact on Plan**: [How this affects timeline/other tasks]
 ```
 
-### 자동 워커 선택 및 조율
+### Scope Explosion
 
-**Phase 1: Analysis & Design**
-- Code Analyzer (기존 코드 분석)
-- System Architect (아키텍처 설계)
+```markdown
+## Orchestrator: Scope Control
 
-**Phase 2: Implementation (병렬)**
-- Frontend Developer
-- Backend Developer
-- Database Developer
+**Issue**: Subtask count growing uncontrollably (was 10, now 50)
 
-**Phase 3: Quality Assurance**
-- Test Engineer
-- Performance Optimizer (필요 시)
+**Assessment**:
+- Is growth justified? [Analysis]
+- Core requirements still met? [Check]
+- Timeline impact acceptable? [Evaluation]
 
-**Phase 4: Documentation**
-- Documentation Writer
-
-### 자동 품질 평가 (Evaluator 기능 내장)
-
-각 Phase 완료 후 자동 평가:
-
-```bash
-# Phase별 품질 검증
-validate_phase() {
-  PHASE=$1
-  case $PHASE in
-    design)
-      check_architecture_completeness
-      check_api_specification
-      ;;
-    implementation)
-      run_integration_tests
-      check_code_quality
-      ;;
-    *)
-      ;;
-  esac
-}
+**Actions**:
+- Prioritize must-haves vs. nice-to-haves
+- Defer non-critical subtasks
+- Communicate scope change to user
 ```
 
-### 피드백 루프
+## Performance Considerations
 
-품질 미달 시 자동 재실행:
+### Overhead
+- Orchestration layer adds coordination cost
+- Each worker delegation has context cost
+- Replanning cycles take time
 
-```bash
-if [ "$QUALITY_SCORE" -lt "0.90" ]; then
-  echo "⚠️  품질 미달 - 재실행"
-  # 해당 워커 재할당
-  reexecute_worker "$WORKER_ID" "$FEEDBACK"
-fi
-```
+### When Worth It
+- Complex, unpredictable problems
+- High-stakes projects needing adaptability
+- When discovery is part of the task
 
-### 사용 예시
+### When Too Much
+- Simple, well-defined tasks
+- Time-critical with no room for adaptation
+- When subtasks are clearly predetermined
 
-```
-사용자: "E-commerce 플랫폼 구축"
+## Summary
 
-Orchestrator (통합 모드):
-  ✓ Auto Classification: feature_development, 0.95
-  ✓ Auto Worker Selection: 7개 워커
-  ✓ Phase 1: Analysis & Design 완료
-  ✓ Phase 2: Implementation 완료 (병렬)
-  ✓ Phase 3: Testing 완료
-  ✓ Phase 4: Documentation 완료
-  ✓ Auto Evaluation: 93% 품질
-  ✅ 완료
-```
+The Dynamic Task Orchestrator implements Anthropic's Orchestrator-Workers pattern by:
 
-### 메시지 프로토콜
+1. **Dynamically analyzing** complex tasks without predetermined decomposition
+2. **Delegating** to specialized workers based on emerging needs
+3. **Synthesizing** worker results into coherent output
+4. **Adaptively replanning** as new information emerges
+5. **Coordinating** multiple specialists for complex work
 
-통합 모드에서도 표준 메시지 프로토콜 사용:
+This pattern excels when:
+- Task complexity requires specialization
+- Subtasks emerge during execution (not predetermined)
+- Adaptive planning provides better outcomes than fixed workflows
 
-```bash
-# 워커에게 메시지 전송
-.agent_skills/scripts/send_message.sh \
-  orchestrator \
-  sequential \
-  execute_subtask \
-  ${SUBTASK_ID} \
-  '{"worker_type":"developer","subtask":{"description":"..."}}'
-
-# 워커 완료 확인
-.agent_skills/scripts/check_messages.sh orchestrator
-```
-
-### 참조
-
-- **Workflow Manager:** `agent-workflow-manager` 스킬
-- **슬래시 커맨드:** `/workflow-complex`
-- **통합 프로토콜:** `.agent_skills/integration_protocol.md`
-
----
+**Remember**: The power is in **adaptability**. Unlike Sequential (fixed steps) or Parallel (predetermined splits), the Orchestrator **discovers** the work structure as it proceeds. This is the key differentiator.

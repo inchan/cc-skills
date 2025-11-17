@@ -1,402 +1,643 @@
 ---
 name: iterative-quality-enhancer
-description: Implement the Evaluator-Optimizer pattern to iteratively evaluate and optimize code and deliverables across 5 quality dimensions (functionality, performance, code quality, security, documentation). Use when code quality improvement, performance optimization, security hardening, or comprehensive quality assurance is needed. Supports integration with sequential, parallel, orchestrator, and router skills as a quality gate.
+description: Implements Anthropic's Evaluator-Optimizer pattern where one LLM generates solutions and another provides evaluative feedback in an iterative loop. Use when quality can be demonstrably improved through articulated feedback cycles. Evaluates across 5 dimensions (functionality, performance, code quality, security, documentation) with up to 5 improvement iterations.
 ---
 
-# Iterative Quality Enhancer
+# Iterative Quality Enhancer (Evaluator-Optimizer Pattern)
 
 ## Overview
 
-Implement the Evaluator-Optimizer pattern from Anthropic's "Building Effective Agents" to systematically improve code and deliverables through iterative evaluation and optimization. Evaluate artifacts across 5 comprehensive quality dimensions, generate targeted feedback, and apply optimization strategies in up to 5 iterations until quality thresholds are met.
+This skill implements the **Evaluator-Optimizer** workflow pattern from Anthropic's "Building Effective Agents". The core principle is that one LLM generates a response while another provides evaluation and feedback, creating an **iterative refinement loop** until quality standards are met.
+
+**Reference**: https://www.anthropic.com/engineering/building-effective-agents
+
+### Key Principle
+
+> "Evaluator-Optimizer: One LLM call generates a response while another provides evaluation and feedback in a loop."
+
+**Critical Success Factor:**
+> "This workflow is particularly effective when we have clear evaluation criteria, and when iterative refinement provides measurable value."
+
+**Trade-off**: Multiple iterations for higher quality output.
 
 ## When to Use This Skill
 
-Activate this skill when:
+**Ideal scenarios:**
+- **Clear evaluation criteria** exist (measurable quality dimensions)
+- **Iterative refinement** provides demonstrable value
+- Output quality **improves measurably** with feedback
+- Both generation and evaluation are **LLM-achievable tasks**
 
-- Code quality improvement is needed for existing implementations
-- Performance optimization is required for slow or inefficient code
-- Security hardening is needed to address vulnerabilities
-- Comprehensive quality assurance before production deployment
-- Refactoring legacy code to modern standards
-- Serving as a quality gate for other skills (sequential, parallel, orchestrator, router)
-- Users explicitly request "optimize," "improve quality," "enhance security," or similar quality-focused actions
+**Concrete examples:**
+- Code optimization with performance benchmarks
+- Security hardening with vulnerability checks
+- Documentation improvement with completeness criteria
+- Translation refinement with nuance evaluation
+- Content generation with style/tone criteria
 
-## Core Workflow
+**Do NOT use when:**
+- No clear evaluation criteria exist
+- Single-shot generation is sufficient
+- Evaluation requires human judgment beyond LLM capability
+- Iteration overhead exceeds quality gains
 
-### 1. Initialization
+## Core Workflow: The Feedback Loop
 
-Start by understanding the artifact to be enhanced:
-
-1. Identify the artifact type: code, documentation, architecture, or full project
-2. Load the artifact and understand its context
-3. Clarify requirements (functional, non-functional, quality targets)
-4. Determine optimization focus: balanced, performance, security, or quality
-
-Example user requests:
-- "Optimize this REST API for performance and security"
-- "Improve the quality of this legacy code module"
-- "Enhance this documentation for completeness and clarity"
-
-### 2. Multi-Dimensional Evaluation
-
-Execute comprehensive evaluation across 5 dimensions using the evaluation framework in `references/evaluation_config.json`:
-
-**Functionality (weight: 0.30, threshold: 0.95)**
-- Correctness: All requirements met
-- Completeness: Edge cases handled
-- Reliability: Error handling robustness
-
-Evaluation methods:
-- Execute unit tests if present, or recommend creating them
-- Verify integration test coverage
-- Analyze edge case handling
-
-**Performance (weight: 0.20, threshold: 0.85)**
-- Time complexity: O(n log n) or better
-- Space complexity: Memory efficiency
-- Response time: Meets performance SLAs
-
-Evaluation methods:
-- Analyze algorithmic complexity
-- Recommend benchmarking approaches
-- Identify performance bottlenecks
-
-**Code Quality (weight: 0.20, threshold: 0.90)**
-- Readability: Clean code principles
-- Maintainability: Easy to modify and extend
-- Modularity: Proper component separation
-
-Evaluation methods:
-- Apply static code analysis principles
-- Calculate cyclomatic complexity
-- Detect code smells (duplication, long functions, etc.)
-
-**Security (weight: 0.15, threshold: 0.95)**
-- Vulnerability-free: No known security issues
-- Authentication/Authorization: Proper implementation
-- Data protection: Secure data handling
-
-Evaluation methods:
-- Check for common vulnerabilities (SQL injection, XSS, CSRF, etc.)
-- Verify OWASP Top 10 compliance
-- Review authentication and authorization patterns
-
-**Documentation (weight: 0.15, threshold: 0.85)**
-- Completeness: Comprehensive coverage
-- Clarity: Easy to understand
-- Examples: Practical usage demonstrations
-
-Evaluation methods:
-- Check documentation coverage
-- Validate API documentation completeness
-- Verify example code execution
-
-### 3. Iterative Optimization Loop
-
-Execute up to 5 optimization iterations following this process:
+### The Evaluator-Optimizer Loop
 
 ```
-For each iteration (max 5):
-  1. Evaluate artifact across all dimensions
-  2. Calculate weighted total score
-  3. Check termination conditions:
-     - All dimension thresholds met → SUCCESS
-     - No significant improvement (< 5%) after 3+ iterations → STOP
-  4. Generate prioritized feedback for failing dimensions
-  5. Select optimization strategy based on feedback
-  6. Apply targeted optimizations
-  7. Record iteration history
-  8. Proceed to next iteration
+[Initial Artifact/Request]
+       ↓
+[Generator: Produce Solution] ←──────────┐
+       ↓                                  │
+[Evaluator: Assess Quality]               │
+       ↓                                  │
+[Quality Met?] ──Yes──→ [Final Output]    │
+       ↓ No                               │
+[Evaluator: Generate Feedback] ──────────┘
+       ↓
+[Generator: Refine Based on Feedback]
+       ↓
+(Loop until quality met or max iterations)
 ```
 
-**Termination Conditions:**
-- All dimension scores meet their thresholds
-- Total weighted score ≥ 0.90
-- No improvement > 5% for 2 consecutive iterations (after minimum 3 iterations)
-- Maximum 5 iterations reached
+**Key Insight**: The power comes from **articulated feedback** that guides specific improvements.
 
-### 4. Feedback Generation
-
-Generate actionable, prioritized feedback:
-
-1. **Identify failing dimensions:** Dimensions below threshold, sorted by (weight × gap)
-2. **Provide specific issues:** Concrete problems, not generic advice
-3. **Suggest concrete actions:** Executable improvements with expected impact
-4. **Prioritize by impact:** Focus on high-weight dimensions first
-
-Example feedback format:
-```
-Priority 1 - Functionality (0.72/0.95):
-- Issue: Missing error handling for null inputs in processData()
-- Action: Add null checks and throw descriptive errors
-- Expected impact: +0.15 functionality score
-
-Priority 2 - Security (0.82/0.95):
-- Issue: SQL query vulnerable to injection in getUserById()
-- Action: Use parameterized queries instead of string concatenation
-- Expected impact: +0.13 security score
-```
-
-### 5. Optimization Strategies
-
-Apply targeted optimization strategies based on evaluation results:
-
-**Algorithm Optimization** (for performance issues):
-- Improve time complexity (e.g., O(n²) → O(n log n))
-- Optimize space complexity
-- Implement caching strategies
-- Use more efficient data structures
-
-**Code Refactoring** (for code quality issues):
-- Apply design patterns (Strategy, Factory, Observer, etc.)
-- Follow SOLID principles
-- Eliminate code duplication (DRY principle)
-- Extract long functions into smaller units
-- Improve naming and structure
-
-**Performance Tuning** (for response time issues):
-- Identify and remove bottlenecks
-- Optimize resource usage (CPU, memory, I/O)
-- Introduce asynchronous processing
-- Implement parallel execution where appropriate
-
-**Security Hardening** (for security issues):
-- Patch known vulnerabilities
-- Strengthen input validation
-- Implement proper authentication/authorization
-- Add encryption for sensitive data
-- Follow OWASP guidelines
-
-**Documentation Enhancement** (for documentation issues):
-- Add missing docstrings/comments
-- Create comprehensive README
-- Provide usage examples
-- Document API endpoints
-- Add inline code explanations
-
-### 6. Final Report Generation
-
-After optimization completes, generate a comprehensive quality report:
+### Step 1: Initial Generation
 
 ```markdown
-# Quality Enhancement Report
+## Generator: Initial Solution
 
-## Executive Summary
-- Initial Quality Score: X.XX (XX%)
-- Final Quality Score: Y.YY (YY%)
-- Iterations Completed: N
-- Key Improvements: [list major improvements]
+### Task
+[What needs to be created/improved]
 
-## Dimension Analysis
+### Initial Output
+[First attempt at solving the task]
 
-### Functionality: X.XX (threshold: 0.95)
-[Detailed analysis of functionality improvements]
+### Self-Assessment
+- Functionality: [Basic check]
+- Performance: [Initial estimate]
+- Quality: [First impression]
+- Security: [Obvious concerns]
+- Documentation: [Coverage]
+```
 
-### Performance: X.XX (threshold: 0.85)
-[Detailed analysis of performance improvements]
+### Step 2: Comprehensive Evaluation
 
-### Code Quality: X.XX (threshold: 0.90)
-[Detailed analysis of code quality improvements]
+```markdown
+## Evaluator: Quality Assessment
 
-### Security: X.XX (threshold: 0.95)
-[Detailed analysis of security improvements]
+### Evaluation Framework
+Assess across 5 weighted dimensions:
 
-### Documentation: X.XX (threshold: 0.85)
-[Detailed analysis of documentation improvements]
+| Dimension | Weight | Score | Threshold | Status |
+|-----------|--------|-------|-----------|--------|
+| Functionality | 30% | X/10 | 9.5/10 | [Pass/Fail] |
+| Performance | 20% | X/10 | 8.5/10 | [Pass/Fail] |
+| Code Quality | 20% | X/10 | 9.0/10 | [Pass/Fail] |
+| Security | 15% | X/10 | 9.5/10 | [Pass/Fail] |
+| Documentation | 15% | X/10 | 8.5/10 | [Pass/Fail] |
 
-## Optimization Journey
+**Weighted Total**: X.XX (Threshold: 9.0)
 
-### Iteration 1
-- Focus: [primary optimization target]
-- Changes: [specific changes made]
-- Impact: [score improvements]
+### Dimension Details
 
-[Repeat for each iteration]
+#### Functionality (X/10)
+- Correctness: [Requirements met?]
+- Completeness: [Edge cases handled?]
+- Reliability: [Error handling robust?]
 
-## Applied Optimizations
-[Detailed list of all optimizations with before/after comparisons]
+#### Performance (X/10)
+- Time Complexity: [Algorithm efficiency]
+- Space Complexity: [Memory usage]
+- Response Time: [SLA compliance]
 
-## Recommendations
-[Future improvement suggestions if thresholds not fully met]
+#### Code Quality (X/10)
+- Readability: [Clean code principles]
+- Maintainability: [Easy to modify]
+- Modularity: [Component separation]
+
+#### Security (X/10)
+- Vulnerabilities: [Known issues]
+- Auth/AuthZ: [Properly implemented]
+- Data Protection: [Secure handling]
+
+#### Documentation (X/10)
+- Completeness: [Coverage]
+- Clarity: [Understandability]
+- Examples: [Practical demonstrations]
+```
+
+### Step 3: Generate Actionable Feedback
+
+This is the **critical step** - feedback must be specific and actionable:
+
+```markdown
+## Evaluator: Improvement Feedback
+
+### Priority 1: [Dimension with highest (weight × gap)]
+**Current Score**: X/10 (Threshold: Y/10)
+**Gap**: -Z points
+
+**Specific Issues Found**:
+1. [Concrete problem 1]
+   - Location: [Where in code/artifact]
+   - Impact: [Why this matters]
+
+2. [Concrete problem 2]
+   - Location: [Specific location]
+   - Impact: [Measurable consequence]
+
+**Recommended Actions**:
+1. [Specific fix for issue 1]
+   - Expected improvement: +X points
+   - Implementation: [How to do it]
+
+2. [Specific fix for issue 2]
+   - Expected improvement: +Y points
+   - Implementation: [Step-by-step]
+
+### Priority 2: [Next dimension]
+[Same structure...]
+
+### Iteration Goal
+After implementing these changes:
+- Expected [Dimension 1] improvement: X → Y
+- Expected [Dimension 2] improvement: A → B
+- Expected overall score: Current → Target
+```
+
+### Step 4: Apply Improvements (Generator Refines)
+
+```markdown
+## Generator: Implementing Feedback
+
+### Changes Applied
+
+#### Addressing Priority 1 Feedback
+**Issue**: [What was wrong]
+**Action Taken**: [Specific change made]
+**Code Changes**:
+```
+[Before]
+// Old implementation
+
+[After]
+// New implementation based on feedback
+```
+
+**Expected Impact**: [Score improvement]
+
+#### Addressing Priority 2 Feedback
+[Same structure...]
+
+### Refinement Summary
+- Changes made: [List]
+- Areas addressed: [Dimensions improved]
+- Remaining concerns: [If any]
+```
+
+### Step 5: Re-Evaluate and Loop
+
+```markdown
+## Evaluator: Re-Assessment (Iteration N)
+
+### Score Comparison
+| Dimension | Previous | Current | Change | Target Met? |
+|-----------|----------|---------|--------|-------------|
+| Functionality | 7.2 | 8.8 | +1.6 | No |
+| Performance | 6.5 | 8.7 | +2.2 | Yes |
+| Code Quality | 7.0 | 9.1 | +2.1 | Yes |
+| Security | 8.2 | 9.6 | +1.4 | Yes |
+| Documentation | 6.0 | 8.3 | +2.3 | No |
+
+**Weighted Total**: 8.5 → Previous: 7.1 (+1.4)
+
+### Termination Check
+- [ ] All dimensions meet thresholds → Not yet
+- [x] Significant improvement this iteration → Yes (+1.4)
+- [ ] Iteration limit reached (5) → Not yet
+- [ ] Diminishing returns (<5% improvement for 2 iterations) → No
+
+**Decision**: Continue to next iteration
+
+### Next Iteration Feedback
+[Generate new feedback focusing on remaining gaps...]
+```
+
+## Complete Example: REST API Optimization
+
+### Task
+"Optimize this user authentication endpoint for security and performance"
+
+### Initial Code (Generator)
+
+```typescript
+// Initial implementation
+async function authenticateUser(req, res) {
+  const { email, password } = req.body;
+
+  // Query database
+  const user = await db.query(`SELECT * FROM users WHERE email = '${email}'`);
+
+  if (user && user.password === password) {
+    const token = jwt.sign({ id: user.id }, 'secret123');
+    res.json({ token });
+  } else {
+    res.status(401).json({ error: 'Invalid credentials' });
+  }
+}
+```
+
+### Iteration 1: Evaluation
+
+```markdown
+## Evaluation Results
+
+| Dimension | Score | Threshold | Status |
+|-----------|-------|-----------|--------|
+| Functionality | 7/10 | 9.5 | FAIL |
+| Performance | 6/10 | 8.5 | FAIL |
+| Code Quality | 7/10 | 9.0 | FAIL |
+| Security | 3/10 | 9.5 | **CRITICAL FAIL** |
+| Documentation | 2/10 | 8.5 | FAIL |
+
+**Weighted Total**: 5.6/10 (Target: 9.0)
+
+### Critical Security Findings
+1. **SQL Injection Vulnerability** (Critical)
+   - Line: `db.query(\`SELECT * FROM users WHERE email = '${email}'\`)`
+   - Impact: Complete database compromise possible
+
+2. **Plaintext Password Comparison** (Critical)
+   - Line: `user.password === password`
+   - Impact: Passwords not hashed, easily compromised
+
+3. **Hardcoded JWT Secret** (High)
+   - Line: `jwt.sign({ id: user.id }, 'secret123')`
+   - Impact: Tokens can be forged if secret discovered
+
+### Feedback for Generator
+**Priority 1: Security (Critical)**
+1. Use parameterized queries to prevent SQL injection
+2. Implement bcrypt for password hashing/verification
+3. Use environment variable for JWT secret
+4. Add token expiration
+
+**Priority 2: Functionality**
+1. Add input validation (email format, password requirements)
+2. Handle database connection errors
+3. Return appropriate error messages
+
+Expected improvement: 3/10 → 8/10 security, 7/10 → 9/10 functionality
+```
+
+### Iteration 1: Generator Refinement
+
+```typescript
+// Iteration 1: Security-focused improvements
+import bcrypt from 'bcrypt';
+import { z } from 'zod';
+
+const loginSchema = z.object({
+  email: z.string().email(),
+  password: z.string().min(8)
+});
+
+async function authenticateUser(req, res) {
+  try {
+    // Input validation
+    const { email, password } = loginSchema.parse(req.body);
+
+    // Parameterized query (SQL injection prevention)
+    const user = await db.query(
+      'SELECT id, password_hash FROM users WHERE email = $1',
+      [email]
+    );
+
+    if (!user) {
+      return res.status(401).json({ error: 'Invalid credentials' });
+    }
+
+    // Secure password verification
+    const isValid = await bcrypt.compare(password, user.password_hash);
+
+    if (!isValid) {
+      return res.status(401).json({ error: 'Invalid credentials' });
+    }
+
+    // Secure token generation
+    const token = jwt.sign(
+      { id: user.id },
+      process.env.JWT_SECRET,
+      { expiresIn: '1h' }
+    );
+
+    res.json({ token, expiresIn: 3600 });
+  } catch (error) {
+    if (error instanceof z.ZodError) {
+      return res.status(400).json({ error: 'Invalid input' });
+    }
+    console.error('Auth error:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+}
+```
+
+### Iteration 2: Re-Evaluation
+
+```markdown
+## Evaluation Results (Iteration 2)
+
+| Dimension | Previous | Current | Change |
+|-----------|----------|---------|--------|
+| Functionality | 7/10 | 9/10 | +2 |
+| Performance | 6/10 | 7/10 | +1 |
+| Code Quality | 7/10 | 8/10 | +1 |
+| Security | 3/10 | 9/10 | **+6** |
+| Documentation | 2/10 | 2/10 | 0 |
+
+**Weighted Total**: 7.2/10 (+1.6)
+
+### Remaining Issues
+1. **Performance**: No rate limiting, bcrypt is intentionally slow
+2. **Documentation**: No JSDoc, README, or API docs
+3. **Code Quality**: Some duplication in error handling
+
+### Feedback for Next Iteration
+**Priority 1: Documentation**
+1. Add JSDoc comments to function
+2. Document expected request/response format
+3. Add error code documentation
+
+**Priority 2: Performance**
+1. Implement rate limiting
+2. Consider caching for failed attempts
+3. Add async password hashing timeout
+
+Expected improvement: 7.2/10 → 8.8/10
+```
+
+### Iteration 3: Final Refinement
+
+```typescript
+/**
+ * Authenticates a user and returns a JWT token.
+ *
+ * @description
+ * Validates user credentials against the database using bcrypt for secure
+ * password verification. Returns a signed JWT token on success.
+ *
+ * @route POST /api/auth/login
+ *
+ * @param {Object} req.body - Request body
+ * @param {string} req.body.email - User's email address
+ * @param {string} req.body.password - User's password (min 8 characters)
+ *
+ * @returns {Object} Authentication response
+ * @returns {string} response.token - JWT token (valid for 1 hour)
+ * @returns {number} response.expiresIn - Token lifetime in seconds
+ *
+ * @throws {400} Invalid input - Email format invalid or password too short
+ * @throws {401} Invalid credentials - Email/password combination incorrect
+ * @throws {429} Too many requests - Rate limit exceeded
+ * @throws {500} Internal server error - Database or system failure
+ *
+ * @example
+ * // Request
+ * POST /api/auth/login
+ * {
+ *   "email": "user@example.com",
+ *   "password": "securePassword123"
+ * }
+ *
+ * // Success Response (200)
+ * {
+ *   "token": "eyJhbGciOiJIUzI1NiIs...",
+ *   "expiresIn": 3600
+ * }
+ *
+ * @security
+ * - Passwords are verified using bcrypt with salt
+ * - SQL injection prevented via parameterized queries
+ * - JWT secrets stored in environment variables
+ * - Rate limiting prevents brute force attacks
+ */
+async function authenticateUser(req, res) {
+  try {
+    const { email, password } = loginSchema.parse(req.body);
+
+    const user = await db.query(
+      'SELECT id, password_hash FROM users WHERE email = $1',
+      [email]
+    );
+
+    if (!user) {
+      return res.status(401).json({
+        error: 'Invalid credentials',
+        code: 'AUTH_INVALID_CREDENTIALS'
+      });
+    }
+
+    const isValid = await bcrypt.compare(password, user.password_hash);
+
+    if (!isValid) {
+      return res.status(401).json({
+        error: 'Invalid credentials',
+        code: 'AUTH_INVALID_CREDENTIALS'
+      });
+    }
+
+    const token = jwt.sign(
+      { id: user.id, email: user.email },
+      process.env.JWT_SECRET,
+      { expiresIn: '1h' }
+    );
+
+    res.json({
+      token,
+      expiresIn: 3600,
+      tokenType: 'Bearer'
+    });
+  } catch (error) {
+    handleAuthError(error, res);
+  }
+}
+
+function handleAuthError(error, res) {
+  if (error instanceof z.ZodError) {
+    return res.status(400).json({
+      error: 'Invalid input',
+      code: 'AUTH_VALIDATION_ERROR',
+      details: error.errors
+    });
+  }
+
+  console.error('Authentication error:', error);
+  res.status(500).json({
+    error: 'Internal server error',
+    code: 'AUTH_INTERNAL_ERROR'
+  });
+}
+```
+
+### Final Evaluation
+
+```markdown
+## Final Evaluation Results
+
+| Dimension | Initial | Final | Improvement |
+|-----------|---------|-------|-------------|
+| Functionality | 7/10 | 9.5/10 | +2.5 |
+| Performance | 6/10 | 8.5/10 | +2.5 |
+| Code Quality | 7/10 | 9.2/10 | +2.2 |
+| Security | 3/10 | 9.8/10 | **+6.8** |
+| Documentation | 2/10 | 9.0/10 | +7.0 |
+
+**Weighted Total**: 5.6/10 → **9.3/10** (+3.7)
+
+### Termination Reason
+All dimensions meet or exceed thresholds. Quality target achieved.
+
+### Key Improvements
+1. **Security**: SQL injection → parameterized queries, plaintext → bcrypt, hardcoded → env vars
+2. **Documentation**: 0 docs → comprehensive JSDoc with examples
+3. **Functionality**: Added validation, error handling, proper responses
+4. **Code Quality**: Extracted error handling, consistent patterns
+5. **Performance**: Appropriate for security requirements
+
+### Iterations: 3/5
+Quality achieved before maximum iterations.
 ```
 
 ## Integration with Other Skills
 
-This skill serves as a quality gate for other skills:
+### As Quality Gate
 
-**Sequential Task Processor:**
-- Evaluate each task's output before proceeding to the next
-- Ensure cumulative quality across the workflow
-- Provide feedback for task refinement
-
-**Parallel Task Executor:**
-- Validate merged results from parallel executions
-- Ensure no quality degradation from parallelization
-- Verify integration points between parallel components
-
-**Orchestrator:**
-- Quality-check worker outputs before aggregation
-- Ensure consistency across distributed components
-- Validate final orchestrated result
-
-**Router:**
-- Provide quality feedback to improve routing decisions
-- Evaluate routed task outcomes
-- Help router learn from quality patterns
-
-## Input/Output Format
-
-### Input
-```json
-{
-  "task_id": "unique-task-identifier",
-  "artifact": {
-    "type": "code|documentation|architecture|full_project",
-    "path": "path/to/artifact",
-    "metadata": {
-      "language": "python|javascript|etc",
-      "framework": "framework-name"
-    }
-  },
-  "requirements": {
-    "functional": ["requirement1", "requirement2"],
-    "non_functional": ["requirement1", "requirement2"],
-    "quality_targets": {
-      "functionality": 0.95,
-      "performance": 0.85,
-      "code_quality": 0.90,
-      "security": 0.95,
-      "documentation": 0.85
-    }
-  },
-  "from_skill": "sequential|parallel|orchestrator|router|null",
-  "optimization_focus": "balanced|performance|security|quality"
-}
+```
+[Any Skill] completes work
+       ↓
+Route to: iterative-quality-enhancer
+       ↓
+Evaluates output against criteria
+       ↓
+If quality met: Approve
+If not: Provide feedback → Original skill refines
 ```
 
-### Output
-```json
-{
-  "task_id": "unique-task-identifier",
-  "optimization_summary": {
-    "initial_score": 0.72,
-    "final_score": 0.94,
-    "iterations": 3,
-    "improvements_made": [
-      "Fixed SQL injection vulnerability",
-      "Optimized algorithm from O(n²) to O(n log n)",
-      "Added comprehensive error handling",
-      "Enhanced API documentation"
-    ]
-  },
-  "dimension_scores": {
-    "functionality": 0.96,
-    "performance": 0.88,
-    "code_quality": 0.92,
-    "security": 0.98,
-    "documentation": 0.86
-  },
-  "applied_optimizations": [
-    {
-      "iteration": 1,
-      "target": "security",
-      "action": "parameterized_queries",
-      "impact": "+0.16 security score"
-    },
-    {
-      "iteration": 2,
-      "target": "performance",
-      "action": "algorithm_optimization",
-      "impact": "+0.15 performance score"
-    },
-    {
-      "iteration": 3,
-      "target": "functionality",
-      "action": "error_handling_enhancement",
-      "impact": "+0.12 functionality score"
-    }
-  ],
-  "final_artifact": "path/to/optimized/artifact",
-  "quality_report": "path/to/quality_report.md",
-  "recommendations": [
-    "Consider implementing caching for frequently accessed data",
-    "Add integration tests for critical workflows"
-  ]
-}
+### With Sequential Processor
+```
+Sequential: Completes Step N
+→ Evaluator: Checks Step N output
+→ If pass: Proceed to Step N+1
+→ If fail: Feedback to Sequential, retry Step N
 ```
 
-## Practical Examples
+### With Parallel Executor
+```
+Parallel: Completes merged output
+→ Evaluator: Validates integration quality
+→ If issues: Feedback on merge conflicts or inconsistencies
+→ Parallel refines merge strategy
+```
 
-### Example 1: REST API Optimization
-
-**User request:** "Optimize this REST API endpoint for performance and security"
-
-**Process:**
-1. Load the API endpoint code
-2. Initial evaluation reveals:
-   - Functionality: 0.88 (missing edge case handling)
-   - Performance: 0.65 (N+1 query problem)
-   - Security: 0.70 (no input validation)
-3. Iteration 1: Fix security issues (input validation, SQL injection prevention)
-4. Iteration 2: Optimize performance (batch queries, add caching)
-5. Iteration 3: Complete functionality (edge case handling)
-6. Final scores: All dimensions > thresholds
-7. Generate quality report with before/after comparisons
-
-### Example 2: Legacy Code Refactoring
-
-**User request:** "Improve the quality of this legacy authentication module"
-
-**Process:**
-1. Load authentication module code
-2. Initial evaluation reveals:
-   - Code Quality: 0.55 (high complexity, code smells)
-   - Security: 0.72 (weak password hashing)
-   - Documentation: 0.40 (minimal comments)
-3. Iteration 1: Refactor into smaller functions, apply design patterns
-4. Iteration 2: Upgrade to modern password hashing (bcrypt/argon2)
-5. Iteration 3: Add comprehensive documentation and examples
-6. Iteration 4: Further refactoring based on diminishing returns analysis
-7. Final optimization with detailed improvement history
-
-## Resources
-
-### references/
-- `evaluation_config.json`: Complete evaluation framework with dimensions, weights, thresholds, and criteria
-- `api_optimization_example.md`: Detailed walkthrough of REST API optimization process
-- `security_enhancement_example.md`: Step-by-step security hardening scenario
-
-### scripts/
-The scripts directory contains evaluation, optimization, and analysis modules. These are reference implementations showing the structure and logic of each component. When optimizing code, apply these patterns and principles directly rather than executing the scripts.
-
-**Structure:**
-- `evaluators/`: Dimension-specific evaluation logic
-- `optimizers/`: Targeted optimization strategies
-- `analyzers/`: Static and dynamic analysis tools
-- `feedback/`: Feedback generation and prioritization
-- `reports/`: Quality report generation
-
-**Note:** These scripts demonstrate the evaluation and optimization patterns. Apply their logic directly to user code rather than calling them as external tools.
+### With Orchestrator
+```
+Orchestrator: Worker completes subtask
+→ Evaluator: Quality check on worker output
+→ If substandard: Orchestrator reassigns or requests refinement
+→ Ensures overall project quality
+```
 
 ## Best Practices
 
-1. **Start with evaluation:** Always evaluate before optimizing
-2. **Prioritize by impact:** Focus on high-weight dimensions first
-3. **Be specific:** Provide concrete, actionable feedback
-4. **Track progress:** Record all changes and their impacts
-5. **Know when to stop:** Don't over-optimize if thresholds are met
-6. **Document changes:** Explain what was changed and why
-7. **Provide evidence:** Show before/after comparisons and metrics
-8. **Consider trade-offs:** Sometimes optimizing one dimension affects another
+### 1. Define Clear Criteria
+Before starting, establish:
+- Specific quality dimensions
+- Measurable thresholds
+- Weighted importance
 
-## Limitations
+### 2. Make Feedback Actionable
+Each feedback item must be:
+- Specific (not generic advice)
+- Locatable (point to exact issue)
+- Actionable (how to fix)
+- Measurable (expected improvement)
 
-- Evaluation is qualitative and based on code analysis, not execution metrics
-- Some performance metrics require actual benchmarking
-- Security evaluation follows best practices but doesn't replace professional security audits
-- Automated testing is recommended but not executed by this skill
-- Complex architectural issues may require human judgment
+### 3. Track Progress
+Record:
+- Score changes per iteration
+- What changes were made
+- Which feedback was most effective
 
-## Version
+### 4. Know When to Stop
+Stop when:
+- All thresholds met
+- Diminishing returns (< 5% improvement)
+- Maximum iterations reached
+- Trade-off analysis favors stopping
 
-1.0.0
+### 5. Balance Dimensions
+Improving one dimension shouldn't severely hurt another:
+- Performance vs. Readability
+- Security vs. Performance
+- Functionality vs. Simplicity
+
+## Termination Conditions
+
+```markdown
+## Loop Termination Check
+
+### Success Criteria (STOP - Quality Achieved)
+- [ ] All dimension scores >= thresholds
+- [ ] Weighted total >= 9.0
+→ Terminate with SUCCESS
+
+### Failure Criteria (STOP - Cannot Improve Further)
+- [ ] 5 iterations completed without full success
+- [ ] < 5% improvement for 2 consecutive iterations (after iteration 3)
+- [ ] Critical blocker discovered (requires human intervention)
+→ Terminate with PARTIAL SUCCESS or FAILURE
+
+### Continue Criteria
+- [ ] Significant improvement this iteration (> 5%)
+- [ ] Clear path to meeting thresholds
+- [ ] Iterations remaining
+→ Continue to next iteration
+```
+
+## Common Pitfalls
+
+### Over-Optimization
+**Problem**: Optimizing beyond necessary thresholds
+**Solution**: Stop when "good enough" is reached
+
+### Generic Feedback
+**Problem**: "Improve code quality" (too vague)
+**Solution**: "Extract lines 45-67 into separate function, reduce cyclomatic complexity from 12 to 4"
+
+### Ignoring Trade-offs
+**Problem**: Maximizing security breaks performance
+**Solution**: Consider dimension weights and real-world requirements
+
+### Infinite Loops
+**Problem**: Never meeting thresholds
+**Solution**: Implement maximum iteration limit and diminishing returns detection
+
+## Summary
+
+The Iterative Quality Enhancer implements Anthropic's Evaluator-Optimizer pattern by:
+
+1. **Generating** initial solution (or receiving from other skill)
+2. **Evaluating** comprehensively across multiple dimensions
+3. **Providing articulated feedback** with specific, actionable improvements
+4. **Refining** based on feedback (Generator role)
+5. **Iterating** until quality thresholds met or termination conditions reached
+
+This pattern excels when:
+- Quality can be **objectively measured**
+- Improvement is **demonstrable** through iterations
+- **Feedback drives refinement** effectively
+- Both generation and evaluation are achievable by LLM
+
+**Remember**: The power is in the **feedback loop**. Generic evaluation provides little value. **Specific, actionable feedback** that leads to measurable improvement is what makes this pattern effective.
