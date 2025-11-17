@@ -27,6 +27,23 @@
   "warning": "OpenAI 인증 필요. 실제 API 호출은 테스트되지 않았습니다.",
   "cli_type": "hybrid",
   "automation_support": "full",
+  "automation": {
+    "support_level": "full",
+    "non_interactive_mode": {
+      "command": "codex exec",
+      "stdin_support": true,
+      "stdin_pattern": "echo '{prompt}' | codex exec -",
+      "output_format": "text"
+    },
+    "auto_approval_mode": {
+      "available": true,
+      "flag": "--full-auto",
+      "warning": "danger mode - auto-approves all tool calls"
+    },
+    "execution_pattern": "echo '{prompt}' | codex exec -",
+    "timeout_support": true,
+    "sandbox_modes": ["read-only", "workspace-write", "danger-full-access"]
+  },
   "sources": {
     "github_repo": "https://github.com/openai/codex",
     "changelog": "https://github.com/openai/codex/releases",

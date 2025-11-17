@@ -27,6 +27,24 @@
   "warning": "인증이 필요합니다 (QWEN_OAUTH 또는 OPENAI_API_KEY). 실제 API 호출은 테스트되지 않았습니다.",
   "cli_type": "hybrid",
   "automation_support": "full",
+  "automation": {
+    "support_level": "full",
+    "non_interactive_mode": {
+      "command": "qwen -p",
+      "stdin_support": true,
+      "stdin_pattern": "echo '{context}' | qwen -p '{prompt}'",
+      "output_format": "text"
+    },
+    "auto_approval_mode": {
+      "available": true,
+      "flag": "--yolo",
+      "alias": "--approval-mode yolo",
+      "warning": "auto-approves all edits without confirmation"
+    },
+    "execution_pattern": "qwen -p '{prompt}'",
+    "timeout_support": false,
+    "approval_modes": ["plan", "default", "auto-edit", "yolo"]
+  },
   "sources": {
     "github_repo": "https://github.com/QwenLM/qwen-code",
     "changelog": "https://github.com/QwenLM/qwen-code/releases",
