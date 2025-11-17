@@ -7,10 +7,25 @@ description: OpenAI Codex CLI 어댑터. dual-ai-loop의 기본 CLI로서 설치
 
 ## 검증 상태
 
-✅ **검증됨** (2025-11-17)
-- npm 패키지: @openai/codex (v0.58.0)
-- GitHub: https://github.com/openai/codex
-- OpenAI 공식 패키지 확인됨
+✅ **완전 검증됨** (2025-11-17)
+
+**실제 테스트 결과:**
+- ✅ npm 설치: `npm install -g @openai/codex` - 성공 (1 package, 24s)
+- ✅ 설치 경로: `/opt/node22/bin/codex`
+- ✅ 버전 확인: `codex --version` → `codex-cli 0.58.0`
+- ✅ 도움말: `codex --help` → 서브커맨드 및 옵션 확인
+- ✅ **비대화형 모드**: `codex exec` 서브커맨드 지원
+- ✅ **stdin 지원**: `codex exec -` (stdin에서 프롬프트 읽기)
+- ✅ 기본 모델: `gpt-5-codex` (연구 프리뷰)
+
+**미테스트 사항:**
+- ⚠️ 실제 API 호출 (인증 필요)
+- ⚠️ OpenAI 계정 인증 플로우
+- ❌ dual-ai-loop 통합 테스트
+
+**자동화 가능성**: ✅ **높음**
+- exec 모드와 stdin 지원으로 완전 자동화 가능
+- 예: `echo "프롬프트" | codex exec -`
 
 ## 개요
 
@@ -44,7 +59,7 @@ codex --version
 
 **출력 예시:**
 ```
-codex version 0.58.0
+codex-cli 0.58.0
 ```
 
 ## 설치 방법

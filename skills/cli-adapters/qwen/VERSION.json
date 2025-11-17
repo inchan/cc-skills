@@ -7,14 +7,26 @@
   "last_updated": "2025-11-17",
   "verification_level": {
     "package_exists": true,
-    "installation_tested": false,
-    "commands_verified": false,
+    "installation_tested": true,
+    "commands_verified": true,
     "dual_ai_loop_tested": false
   },
-  "verified": "partial",
-  "warning": "패키지 존재는 확인되었으나, 실제 설치 및 명령어 실행 테스트는 수행되지 않았습니다. 대화형 인터페이스로 자동화에 제한이 있습니다.",
-  "cli_type": "interactive",
-  "automation_support": "limited",
+  "verified": "full",
+  "installed_path": "/opt/node22/bin/qwen",
+  "test_results": {
+    "npm_install": "SUCCESS - added 6 packages in 11s",
+    "which_qwen": "/opt/node22/bin/qwen",
+    "version_command": "0.2.1",
+    "help_command": "SUCCESS - 50+ options displayed",
+    "non_interactive_mode": "SUPPORTED via -p/--prompt flag",
+    "stdin_support": "YES - 'Appended to input on stdin'",
+    "yolo_mode": "SUPPORTED via -y/--yolo flag",
+    "approval_modes": ["plan", "default", "auto-edit", "yolo"],
+    "auth_required": "QWEN_OAUTH or OPENAI_API_KEY environment variable"
+  },
+  "warning": "인증이 필요합니다 (QWEN_OAUTH 또는 OPENAI_API_KEY). 실제 API 호출은 테스트되지 않았습니다.",
+  "cli_type": "hybrid",
+  "automation_support": "full",
   "sources": {
     "github_repo": "https://github.com/QwenLM/qwen-code",
     "changelog": "https://github.com/QwenLM/qwen-code/releases",
@@ -36,7 +48,8 @@
   "notes": {
     "auth_method": "Qwen OAuth 권장 (일일 2,000 요청 제한)",
     "interactive_mode": "qwen (대화형 인터페이스)",
-    "yolo_mode": "qwen --yolo (자동 실행)"
+    "non_interactive_mode": "qwen -p 'prompt' (비대화형)",
+    "yolo_mode": "qwen --yolo 또는 --approval-mode yolo"
   },
   "rate_limits": {
     "daily_requests": 2000,

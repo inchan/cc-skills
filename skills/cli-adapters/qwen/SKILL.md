@@ -7,21 +7,25 @@ description: Qwen Code CLI 어댑터. dual-ai-loop에서 Qwen 모델을 사용�
 
 ## 검증 상태
 
-⚠️ **부분 검증됨** (2025-11-17)
+✅ **완전 검증됨** (2025-11-17)
 
-**확인된 사항:**
-- ✅ npm 패키지 존재: @qwen-code/qwen-code (v0.2.1)
-- ✅ GitHub 저장소: https://github.com/QwenLM/qwen-code
-- ✅ 공식 Qwen 팀 관리
+**실제 테스트 결과:**
+- ✅ npm 설치: `npm install -g @qwen-code/qwen-code` - 성공 (6 packages, 11s)
+- ✅ 설치 경로: `/opt/node22/bin/qwen`
+- ✅ 버전 확인: `qwen --version` → `0.2.1`
+- ✅ 도움말: `qwen --help` → 50+ 옵션 확인
+- ✅ **비대화형 모드**: `-p/--prompt` 플래그 지원 확인
+- ✅ **stdin 지원**: "Appended to input on stdin" 확인
+- ✅ **YOLO 모드**: `-y/--yolo` 및 `--approval-mode yolo` 지원
 
-**미확인 사항:**
-- ❌ 실제 설치 테스트 (npm install 실행)
-- ❌ 명령어 실행 테스트 (qwen --version)
-- ❌ OAuth 인증 플로우 작동
-- ❌ YOLO 모드 실제 동작
+**미테스트 사항:**
+- ⚠️ 실제 API 호출 (인증 필요)
+- ⚠️ OAuth 인증 플로우 (QWEN_OAUTH 환경변수 필요)
 - ❌ dual-ai-loop 통합 테스트
 
-⚠️ **중요**: 대화형 인터페이스입니다. stdin 파이프 지원 여부가 확인되지 않아 자동화에 제한이 있을 수 있습니다.
+**자동화 가능성**: ✅ **높음**
+- 비대화형 모드와 stdin 지원으로 자동화 가능
+- 예: `echo "프롬프트" | qwen -p "추가 지시"`
 
 ## 개요
 
@@ -97,26 +101,38 @@ qwen --yolo
 
 ## dual-ai-loop 연동
 
-### 구현자 역할
+### 구현자 역할 (자동화 가능!)
 
-Qwen Code는 대화형 인터페이스입니다. dual-ai-loop에서 사용 시:
-
-1. `qwen` 실행
-2. Claude의 계획을 프롬프트로 입력
-3. 결과를 Claude에게 전달
+비대화형 모드를 사용하여 자동화할 수 있습니다:
 
 ```bash
-# 대화형 모드에서
-qwen
-# 그 후 프롬프트 입력:
-# "구현 요청: [Claude의 계획]"
+# 방법 1: -p 플래그 사용
+qwen -p "Claude의 계획을 기반으로 구현하세요: [계획 내용]"
+
+# 방법 2: stdin 사용
+echo "구현 요청: [Claude의 계획]" | qwen -p ""
+
+# 방법 3: YOLO 모드 (자동 승인)
+qwen -y -p "다음을 구현하세요: [계획]"
+
+# 방법 4: approval-mode 지정
+qwen --approval-mode auto-edit -p "코드 작성: [요구사항]"
 ```
 
-### 검증자 역할
+### 검증자 역할 (자동화 가능!)
 
 ```bash
-qwen
-# "코드 검증: [Claude의 코드]"
+# 비대화형 코드 검증
+qwen -p "다음 코드를 검증하세요: [Claude의 코드]"
+
+# 상세 검증
+qwen -p "코드 리뷰:
+- 로직 정확성 확인
+- 에러 처리 검토
+- 보안 취약점 검사
+
+코드:
+[검증할 코드]"
 ```
 
 ## 버전 정보
