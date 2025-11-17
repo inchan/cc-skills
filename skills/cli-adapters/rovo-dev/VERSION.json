@@ -5,8 +5,16 @@
   "minimum_version": "BETA",
   "last_checked": "2025-11-17",
   "last_updated": "2025-11-17",
-  "verified": true,
-  "warning": "베타 버전입니다. ACLI (Atlassian Command Line Interface) 설치가 필요합니다.",
+  "verification_level": {
+    "package_exists": true,
+    "installation_tested": false,
+    "commands_verified": false,
+    "dual_ai_loop_tested": false
+  },
+  "verified": "partial",
+  "warning": "공식 문서에서 존재 확인되었으나, 실제 설치 및 명령어 실행 테스트는 수행되지 않았습니다. 베타 버전이며 대화형 인터페이스로 자동화에 제한이 있습니다.",
+  "cli_type": "interactive",
+  "automation_support": "limited",
   "sources": {
     "official_docs": "https://support.atlassian.com/rovo/docs/install-and-run-rovo-dev-cli-on-your-device/",
     "usage_guide": "https://support.atlassian.com/rovo/docs/use-rovo-dev-cli/",

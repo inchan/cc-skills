@@ -5,7 +5,16 @@
   "minimum_version": "0.1.0",
   "last_checked": "2025-11-17",
   "last_updated": "2025-11-17",
-  "verified": true,
+  "verification_level": {
+    "package_exists": true,
+    "installation_tested": false,
+    "commands_verified": false,
+    "dual_ai_loop_tested": false
+  },
+  "verified": "partial",
+  "warning": "패키지 존재는 확인되었으나, 실제 설치 및 명령어 실행 테스트는 수행되지 않았습니다. 대화형 인터페이스로 자동화에 제한이 있습니다.",
+  "cli_type": "interactive",
+  "automation_support": "limited",
   "sources": {
     "github_repo": "https://github.com/QwenLM/qwen-code",
     "changelog": "https://github.com/QwenLM/qwen-code/releases",

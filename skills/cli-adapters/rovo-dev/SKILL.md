@@ -7,12 +7,24 @@ description: Atlassian Rovo Dev CLI 어댑터 (ACLI 서브커맨드). Jira/Confl
 
 ## 검증 상태
 
-✅ **검증됨** (2025-11-17)
-- **공식 문서**: https://support.atlassian.com/rovo/docs/install-and-run-rovo-dev-cli-on-your-device/
-- **제품 페이지**: https://www.atlassian.com/software/rovo-dev
-- **베타 상태**: 현재 베타 버전으로 제공
+⚠️ **부분 검증됨** (2025-11-17)
 
-⚠️ **중요**: `rovo-dev`는 독립 CLI가 아닌 **ACLI (Atlassian Command Line Interface)의 서브커맨드**입니다.
+**확인된 사항:**
+- ✅ 공식 문서 존재: https://support.atlassian.com/rovo/docs/install-and-run-rovo-dev-cli-on-your-device/
+- ✅ 제품 페이지: https://www.atlassian.com/software/rovo-dev
+- ✅ 기본 명령어 구조: `acli rovodev run`
+
+**미확인 사항:**
+- ❌ ACLI 실제 설치 테스트
+- ❌ `acli rovodev` 명령어 실행 테스트
+- ❌ API 토큰 인증 플로우 작동
+- ❌ 설정 파일 옵션 검증
+- ❌ dual-ai-loop 통합 테스트
+
+⚠️ **중요**:
+- `rovo-dev`는 독립 CLI가 아닌 **ACLI (Atlassian Command Line Interface)의 서브커맨드**입니다.
+- 대화형 에이전트로, 자동화에 제한이 있을 수 있습니다.
+- 현재 베타 버전 (기능 및 API 변경 가능)
 
 ## 개요
 
