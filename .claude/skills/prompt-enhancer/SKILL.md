@@ -941,3 +941,130 @@ When helpful, mention existing screens/components:
 For detailed patterns:
 - **Enhancement patterns**: references/enhancement-patterns.md
 - **Framework guides**: references/framework-guides.md
+
+---
+
+## Multi-Agent Collaboration Patterns
+
+prompt-enhancer는 다른 스킬들과 연동하여 더 강력한 워크플로우를 구성할 수 있습니다.
+
+### 스킬 체인 패턴
+
+#### 1. 분석 → 향상 → 구현 체인
+
+```
+[사용자 요청]
+     ↓
+[intelligent-task-router] → 복잡도/카테고리 분류
+     ↓
+[prompt-enhancer] → 상세 요구사항 생성
+     ↓
+[sequential-task-processor] → 단계별 구현
+     ↓
+[iterative-quality-enhancer] → 품질 검증
+```
+
+**사용 시나리오**: 복잡한 기능 개발 요청
+
+#### 2. 병렬 향상 패턴
+
+```
+[복합 요청]
+     ↓
+[parallel-task-executor]
+     ├─→ [prompt-enhancer: 프론트엔드]
+     └─→ [prompt-enhancer: 백엔드]
+     ↓
+[결과 병합] → 통합 요구사항
+```
+
+**사용 시나리오**: 풀스택 기능 요청
+
+#### 3. 오케스트레이터 통합
+
+```
+[dynamic-task-orchestrator]
+     ↓
+[작업 분해]
+     ↓
+[prompt-enhancer] ←── 각 서브태스크 향상
+     ↓
+[워커 할당 및 실행]
+```
+
+**사용 시나리오**: 대규모 프로젝트
+
+### 에이전트 간 인터페이스
+
+#### 입력 인터페이스
+
+```yaml
+from_router:
+  complexity: 0.0-1.0
+  category: feature|bugfix|refactor|test|docs|perf|security
+  priority: critical|high|medium|low
+  intent: string
+
+from_orchestrator:
+  subtask_id: string
+  parent_context: object
+  constraints: array
+```
+
+#### 출력 인터페이스
+
+```yaml
+to_processor:
+  requirements: Layer1-3 구조
+  quality_score: 0-20
+  complexity: simple|standard|extended
+  files_to_create: array
+  files_to_modify: array
+
+to_evaluator:
+  acceptance_criteria: array
+  test_requirements: array
+  golden_metrics: object
+```
+
+### 핸드오프 규칙
+
+| 상황 | 핸드오프 대상 | 조건 |
+|------|-------------|------|
+| 복잡도 판단 필요 | intelligent-task-router | 복잡도 불명확 시 |
+| 병렬 처리 가능 | parallel-task-executor | 독립 작업 2개 이상 |
+| 품질 검증 필요 | iterative-quality-enhancer | 구현 완료 후 |
+| 작업 분해 필요 | dynamic-task-orchestrator | 복잡도 0.7+ |
+
+### 실패 처리
+
+```markdown
+## 핸드오프 실패 시
+
+### 재시도 전략
+1. 동일 스킬 재시도 (1회)
+2. 대체 스킬로 라우팅
+3. 사용자에게 에스컬레이션
+
+### 에러 전파 방지
+- 각 스킬은 독립적으로 실패 처리
+- 부분 결과라도 반환
+- 다음 스킬에 실패 컨텍스트 전달
+```
+
+### 사용 예시
+
+#### agent-workflow-manager와 연동
+
+```markdown
+사용자: "사용자 프로필 기능 만들어줘"
+
+1. agent-workflow-manager가 요청 수신
+2. intelligent-task-router로 분류 → feature, 복잡도 0.6
+3. prompt-enhancer 호출 → 상세 요구사항 생성
+4. sequential-task-processor로 구현
+5. iterative-quality-enhancer로 검증
+6. 완료 후 사용자에게 결과 제시
+```
+
+---
