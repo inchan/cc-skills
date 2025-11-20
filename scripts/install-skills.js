@@ -35,6 +35,7 @@ const config = {
   dryRun: false,
   isGlobal: false, // global 설치 여부
   autoConfirm: false, // --yes 옵션
+  customPath: null, // 특정 경로 지정
   targetDir: null,
   backupDir: null,
   stats: {
@@ -94,6 +95,12 @@ function validatePath(targetPath) {
     path.join(cwd, '.claude')
   ];
 
+  // customPath가 설정된 경우 해당 경로도 허용
+  if (config.customPath) {
+    const customBase = path.resolve(config.customPath);
+    allowedBases.push(customBase);
+  }
+
   // 경로가 허용된 범위 내인지 확인
   const isAllowed = allowedBases.some(base =>
     resolved === base || resolved.startsWith(base + path.sep)
@@ -152,6 +159,15 @@ async function selectTarget() {
   // --yes 옵션 확인 (자동 확인)
   if (args.includes('--yes') || args.includes('-y')) {
     config.autoConfirm = true;
+  }
+
+  // --path 옵션 확인 (특정 경로 지정)
+  const pathIndex = args.indexOf('--path');
+  if (pathIndex !== -1 && args[pathIndex + 1]) {
+    const customPath = args[pathIndex + 1];
+    config.customPath = customPath;
+    logInfo(`특정 경로 사용: ${customPath}`);
+    return customPath;
   }
 
   // --target 옵션 확인

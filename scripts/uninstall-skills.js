@@ -10,6 +10,7 @@
  *   node scripts/uninstall-skills.js --dry-run
  *   node scripts/uninstall-skills.js --restore  # 백업에서 복원
  *   node scripts/uninstall-skills.js --skill <name>  # 특정 스킬만 제거
+ *   node scripts/uninstall-skills.js --path /custom/path/.claude  # 특정 경로
  */
 
 const fs = require('fs').promises;
@@ -35,6 +36,7 @@ const config = {
   autoConfirm: false,
   restore: false,
   specificSkill: null,  // 특정 스킬만 제거
+  customPath: null,  // 특정 경로 지정
   targetDir: null,
   backupDir: null,
   stats: {
@@ -119,6 +121,12 @@ function validatePath(targetPath) {
     path.join(cwd, '.claude')
   ];
 
+  // customPath가 설정된 경우 해당 경로도 허용
+  if (config.customPath) {
+    const customBase = path.resolve(config.customPath);
+    allowedBases.push(customBase);
+  }
+
   const isAllowed = allowedBases.some(base =>
     resolved === base || resolved.startsWith(base + path.sep)
   );
@@ -170,6 +178,15 @@ async function selectTarget() {
   if (skillIndex !== -1 && args[skillIndex + 1]) {
     config.specificSkill = args[skillIndex + 1];
     logInfo(`특정 스킬만 제거: ${config.specificSkill}`);
+  }
+
+  // --path 옵션 확인 (특정 경로 지정)
+  const pathIndex = args.indexOf('--path');
+  if (pathIndex !== -1 && args[pathIndex + 1]) {
+    const customPath = args[pathIndex + 1];
+    config.customPath = customPath;
+    logInfo(`특정 경로 사용: ${customPath}`);
+    return customPath;
   }
 
   const targetIndex = args.indexOf('--target');

@@ -18,12 +18,15 @@ node scripts/install-skills.js
 node scripts/install-skills.js --target global     # ~/.claude에 설치
 node scripts/install-skills.js --target workspace  # ./.claude에 설치
 
+# 특정 경로에 설치
+node scripts/install-skills.js --path /custom/path/.claude
+
 # 미리보기 (실제 변경 없음)
 node scripts/install-skills.js --dry-run
 
 # 비대화형 (확인 생략)
 node scripts/install-skills.js --target global --yes
-node scripts/install-skills.js --target workspace -y --dry-run
+node scripts/install-skills.js --path /other/project/.claude -y
 ```
 
 #### 주요 기능
@@ -80,11 +83,14 @@ node scripts/uninstall-skills.js --restore
 # 특정 스킬만 제거
 node scripts/uninstall-skills.js --skill agent-workflow-manager
 
+# 특정 경로에서 제거
+node scripts/uninstall-skills.js --path /custom/path/.claude
+
 # 비대화형 (확인 생략)
 node scripts/uninstall-skills.js --target global --yes
 
 # 조합 사용
-node scripts/uninstall-skills.js --target workspace --skill prompt-enhancer --dry-run
+node scripts/uninstall-skills.js --path /project/.claude --skill prompt-enhancer --dry-run
 ```
 
 #### 주요 기능
