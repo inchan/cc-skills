@@ -134,8 +134,7 @@ cc-skills/
 │   ├── hooks.json               # 훅 설정
 │   ├── skill-activation-prompt.ts
 │   ├── post-tool-use-tracker.sh
-│   ├── stop-hook-lint-and-translate.sh
-│   └── meta-prompt-logger.js
+│   └── stop-hook-lint-and-translate.sh
 ├── agents/                      # 서브에이전트 정의
 │   ├── code-reviewer.md
 │   ├── architect.md

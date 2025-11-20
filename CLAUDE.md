@@ -192,15 +192,11 @@ Skills use three-level loading:
 **위치**: `hooks/`
 **설정 파일**: `settings.local.json`
 
-#### UserPromptSubmit 훅 (2개)
+#### UserPromptSubmit 훅 (1개)
 1. **skill-activation-prompt.ts**:
    - 사용자 프롬프트 분석 후 적합한 스킬 자동 제안
    - `skills/skill-rules.json` 기반 키워드/인텐트 매칭
    - 우선순위별 스킬 추천 (Critical → High → Medium → Low)
-
-2. **meta-prompt-logger.js**:
-   - 프롬프트 로깅 및 분석
-   - 사용 패턴 추적
 
 #### PostToolUse 훅 (1개)
 - **post-tool-use-tracker.sh**: Edit/Write 후 변경 사항 추적

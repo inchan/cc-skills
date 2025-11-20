@@ -1,6 +1,8 @@
 # Scripts
 
-Claude Code Skills 프로젝트의 유틸리티 스크립트 모음입니다.
+Claude Code Skills 프로젝트의 설치/제거 스크립트 모음입니다.
+
+> **참고**: 테스트 파일들은 `/tests` 폴더에 있습니다.
 
 ## 스크립트 목록
 
@@ -53,10 +55,9 @@ Claude Code 공식 구조에 맞게 설정 파일을 설치합니다:
 
 #### 설치 대상
 
-- 24개 스킬 폴더
+- 23개 스킬 폴더
 - 4개 커맨드 파일
 - 3개 훅 파일 + package.json
-- 2개 스크립트 파일
 
 ---
 
@@ -107,30 +108,10 @@ node scripts/uninstall-skills.js --path /project/.claude --skill prompt-enhancer
 
 #### 제거 대상
 
-- 24개 스킬 폴더
+- 23개 스킬 폴더
 - 4개 커맨드 파일
 - hooks 폴더 전체
-- scripts 폴더
 - skill-rules.json (빈 객체로 초기화)
-
----
-
-### install-skills.test.js
-
-install-skills.js의 단위 테스트입니다.
-
-#### 사용법
-
-```bash
-node scripts/install-skills.test.js
-```
-
-#### 테스트 내용
-
-- 경로 검증 (validatePath)
-- 스킬 규칙 병합 (mergeSkillRules)
-- 설정 병합 (mergeSettings)
-- 엣지 케이스 처리
 
 ---
 
@@ -145,6 +126,4 @@ node scripts/install-skills.test.js
 
 ### 테스트 작성
 
-- 테스트 파일명: `{script-name}.test.js`
-- assert 모듈 사용
-- 독립적인 테스트 케이스 작성
+테스트 파일은 `/tests` 폴더에 작성합니다. 자세한 내용은 `/tests/README.md`를 참고하세요.

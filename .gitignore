@@ -1,2 +1,4 @@
 .claude/tsc-cache/
 .conductor
+node_modules/
+package-lock.json
