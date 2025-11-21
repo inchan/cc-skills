@@ -7,20 +7,20 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 이 프로젝트는 Claude Code 플러그인 마켓플레이스 표준 구조를 따릅니다.
 
 ### 디렉토리 구조
-- `src/` - 개발 원본 (스킬/커맨드/훅/에이전트 편집)
-- `plugin/` - 빌드 결과물 (마켓플레이스 배포용)
+- `plugin/` - 빌드 결과물 (마켓플레이스 배포용, Git 제외)
 - `.claude-plugin/marketplace.json` - 마켓플레이스 메타데이터
+
+**주의**: `plugin/` 디렉토리는 빌드 스크립트로 자동 생성되며 Git에서 제외됩니다.
 
 ### 빌드 프로세스
 ```bash
-npm run build        # src/ → plugin/ 복사
+npm run build        # 빌드 (plugin/ 생성)
 npm run sync         # plugin/ → ~/.claude/plugins/marketplaces/inchan/cc-skills/
 npm run publish      # 버전 업데이트 + Git 태그 + 푸시
 ```
 
 ### 개발 시 주의사항
-- **src/ 디렉토리에서만 편집**
-- plugin/는 빌드 결과물이므로 직접 편집 금지
+- `plugin/`는 빌드 결과물이므로 직접 편집 금지
 - 변경 후 반드시 `npm run build` 실행
 
 ---
@@ -216,6 +216,50 @@ When modifying skills or hooks:
 node tests/validate-skill-rules.js  # Must pass
 node tests/run-activation-tests.js  # Verify triggers work
 ```
+
+## Documentation
+
+이 프로젝트는 체계적인 문서 관리를 위해 문서 가이드라인을 따릅니다.
+
+### 문서 구조
+```
+docs/
+├── DOCUMENTATION_GUIDELINES.md   # 📚 문서 작성 가이드라인 (필수 읽기)
+├── SKILL-DEVELOPMENT-GUIDE.md    # 스킬 개발 가이드
+├── skills-guide/                 # 스킬 사용 가이드
+│   ├── README.md                 # 스킬 가이드 메인
+│   ├── DECISION_TREE.md          # 스킬 선택 결정 트리
+│   └── COMMON_PITFALLS.md        # 흔한 실수 및 해결책
+├── agent-patterns/               # 에이전트 패턴
+│   ├── AGENT_PATTERNS_README.md  # 에이전트 패턴 개요
+│   └── INTER_SKILL_PROTOCOL.md   # 스킬 간 통신 프로토콜
+├── tool-creators/                # 도구 생성 가이드
+│   ├── README.md                 # 도구 생성 메인 가이드
+│   ├── ARCHITECTURE.md           # 아키텍처 설명
+│   ├── QUICK_REFERENCE.md        # 빠른 참조
+│   └── ...
+├── review/                       # 리뷰 및 분석
+└── archive/                      # 아카이브된 문서
+```
+
+### 문서 작성 규칙
+
+새 문서 작성 또는 기존 문서 수정 시:
+1. **[DOCUMENTATION_GUIDELINES.md](docs/DOCUMENTATION_GUIDELINES.md)** 필수 참조
+2. 한글 우선, 기술 용어는 영어 사용
+3. 명확한 구조 (제목, 목차, 섹션)
+4. 실행 가능한 예제 포함
+5. 링크 유효성 검증
+
+### 주요 문서 링크
+
+| 문서 | 설명 | 대상 |
+|------|------|------|
+| [DOCUMENTATION_GUIDELINES.md](docs/DOCUMENTATION_GUIDELINES.md) | 문서 작성 표준 및 스타일 가이드 | 모든 기여자 |
+| [SKILL-DEVELOPMENT-GUIDE.md](docs/SKILL-DEVELOPMENT-GUIDE.md) | 스킬 개발 종합 가이드 | 스킬 개발자 |
+| [tool-creators/](docs/tool-creators/) | 도구 생성 가이드 (Command/Skill/Hook/Subagent) | 도구 개발자 |
+| [skills-guide/](docs/skills-guide/) | 스킬 사용 가이드 | 사용자 |
+| [agent-patterns/](docs/agent-patterns/) | 에이전트 패턴 참조 | 개발자 |
 
 ## Official References
 - [Claude Code Best Practices](https://www.anthropic.com/engineering/claude-code-best-practices)
