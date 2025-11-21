@@ -1,5 +1,5 @@
 #!/bin/bash
-# UserPromptSubmit hook that forces explicit skill evaluation
+# UserPromptSubmit hook that forces explicit skill activation
 #
 # This hook requires Claude to explicitly evaluate each available skill
 # before proceeding with implementation.
@@ -8,12 +8,12 @@
 
 # Logging for debugging
 LOG_FILE="/tmp/claude-hook-debug.log"
-echo "[$(date '+%Y-%m-%d %H:%M:%S')] skill-forced-eval-hook.sh executed" >> "$LOG_FILE"
+echo "[$(date '+%Y-%m-%d %H:%M:%S')] skill-activation-hook.sh executed" >> "$LOG_FILE"
 echo "[$(date '+%Y-%m-%d %H:%M:%S')] PWD: $PWD" >> "$LOG_FILE"
 echo "[$(date '+%Y-%m-%d %H:%M:%S')] ARGS: $@" >> "$LOG_FILE"
 
 # Debugging output to stderr (visible in Claude Code)
-echo "[DEBUG] skill-forced-eval-hook.sh triggered at $(date)" >&2
+echo "[DEBUG] skill-activation-hook.sh triggered at $(date)" >&2
 
 cat <<'EOF'
 INSTRUCTION: MANDATORY SKILL ACTIVATION SEQUENCE

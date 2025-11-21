@@ -3,3 +3,26 @@
 node_modules/
 package-lock.json
 .vscode/
+
+# Build output (marketplace plugin directory)
+plugin/*
+!plugin/.gitkeep
+
+# Migration scripts (temporary)
+migrate-to-marketplace*.sh
+
+# IDE
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+npm-debug.log*
+
+# Temporary files
+*.tmp
+*.swp
+*~

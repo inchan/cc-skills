@@ -115,7 +115,206 @@ node scripts/uninstall-skills.js --path /project/.claude --skill prompt-enhancer
 
 ---
 
+### build.js
+
+플러그인을 빌드하여 `plugin/` 디렉토리에 배포 가능한 형태로 생성합니다.
+
+#### 사용법
+
+```bash
+npm run build
+```
+
+#### 동작
+
+- `src/` 디렉토리의 모든 스킬, 커맨드, 훅, 에이전트를 `plugin/` 디렉토리로 복사
+- `.claude-plugin/plugin.json` 복사
+- 빌드 완료 메시지 출력
+
+---
+
+### publish.js
+
+버전 관리 및 배포를 자동화하는 스크립트입니다.
+
+#### 사용법
+
+```bash
+# 대화형 모드 (버전 선택)
+npm run publish
+
+# 자동 버전 bump
+npm run publish:patch   # 1.4.0 → 1.4.1
+npm run publish:minor   # 1.4.0 → 1.5.0
+npm run publish:major   # 1.4.0 → 2.0.0
+
+# 직접 버전 지정
+node scripts/publish.js --version 2.0.0
+
+# 푸시까지 자동 실행
+node scripts/publish.js --minor --push
+```
+
+#### 배포 프로세스
+
+1. **Git 상태 확인**
+   - 커밋되지 않은 변경사항 감지
+   - 현재 브랜치 확인 (main 권장)
+
+2. **버전 결정**
+   - 현재 버전: `.claude-plugin/plugin.json`의 `version` 필드
+   - 새 버전: CLI 인자 또는 대화형 선택
+
+3. **버전 업데이트**
+   - `.claude-plugin/plugin.json` → `version` 필드
+   - `.claude-plugin/marketplace.json` → `plugins[0].version` 필드
+
+4. **빌드 실행**
+   ```bash
+   npm run build
+   ```
+
+5. **Git 작업**
+   ```bash
+   git add .claude-plugin/plugin.json .claude-plugin/marketplace.json plugin/
+   git commit -m "chore: Release v${VERSION}"
+   git tag "v${VERSION}"
+   ```
+
+6. **푸시 (선택적)**
+   - `--push` 플래그가 있을 때만 실행
+
+#### CLI 옵션
+
+| 옵션 | 설명 | 예시 |
+|------|------|------|
+| `--patch` | 패치 버전 증가 (1.4.0 → 1.4.1) | `npm run publish:patch` |
+| `--minor` | 마이너 버전 증가 (1.4.0 → 1.5.0) | `npm run publish:minor` |
+| `--major` | 메이저 버전 증가 (1.4.0 → 2.0.0) | `npm run publish:major` |
+| `--version <ver>` | 버전 직접 지정 | `node scripts/publish.js --version 2.0.0` |
+| `--push` | 푸시까지 자동 실행 | `node scripts/publish.js --minor --push` |
+
+#### 오류 처리
+
+스크립트는 다음 상황에서 종료됩니다:
+
+- **커밋되지 않은 변경사항이 있을 때**: 먼저 변경사항을 커밋하거나 stash하세요.
+- **잘못된 버전 형식**: Semver 형식 (x.y.z) 필요
+- **빌드 실패**: npm run build가 실패하면 배포가 중단됩니다.
+
+---
+
+### sync-to-marketplace.sh
+
+로컬 마켓플레이스에 플러그인을 동기화합니다.
+
+#### 사용법
+
+```bash
+# 미리보기 (dry-run)
+npm run sync:dry-run
+
+# 실제 동기화
+npm run sync
+```
+
+#### 동작
+
+- `plugin/` 디렉토리를 `~/.claude/marketplace/cc-skills/`로 복사
+- `.claude-plugin/marketplace.json`을 `~/.claude/marketplace/marketplace.json`에 병합
+
+---
+
 ## 개발 가이드
+
+### 일반적인 개발 사이클
+
+```bash
+# 1. 코드 수정 (src/ 디렉토리)
+vim src/skills/my-skill/SKILL.md
+
+# 2. 빌드
+npm run build
+
+# 3. 로컬 테스트
+npm run sync
+# Claude Code 재시작
+
+# 4. 변경사항 커밋
+git add .
+git commit -m "feat: add new skill"
+
+# 5. 배포 (버전 증가 + 빌드 + Git 태그)
+npm run publish:patch
+
+# 6. 푸시 (선택)
+git push origin main
+git push origin v1.4.1
+```
+
+### 빠른 배포 (자동 푸시)
+
+```bash
+# 모든 변경사항 커밋
+git add .
+git commit -m "feat: add new features"
+
+# 배포 및 푸시 자동 실행
+npm run publish:minor -- --push
+```
+
+### 문제 해결
+
+#### "커밋되지 않은 변경사항이 있습니다" 오류
+
+**원인:** Git working directory가 깨끗하지 않음
+
+**해결:**
+```bash
+# 변경사항 확인
+git status
+
+# 옵션 1: 커밋
+git add .
+git commit -m "your message"
+
+# 옵션 2: Stash
+git stash
+```
+
+#### "빌드 실패" 오류
+
+**원인:** `npm run build` 실행 중 오류 발생
+
+**해결:**
+```bash
+# 빌드 로그 확인
+npm run build
+
+# plugin/ 디렉토리 권한 확인
+ls -la plugin/
+
+# 필요시 plugin/ 디렉토리 삭제 후 재빌드
+rm -rf plugin/
+npm run build
+```
+
+#### 버전 충돌
+
+**원인:** 동일한 버전 태그가 이미 존재
+
+**해결:**
+```bash
+# 기존 태그 확인
+git tag
+
+# 태그 삭제 (필요시)
+git tag -d v1.4.1
+git push origin :refs/tags/v1.4.1
+
+# 다시 배포
+npm run publish:patch
+```
 
 ### 새 스크립트 추가
 

@@ -96,15 +96,28 @@ flowchart TB
 
 ## 설치
 
-### 플러그인 설치 (스킬, 커맨드, 에이전트)
+### 개발자 설치 (로컬 테스트)
 
+1. 저장소 클론
+   ```bash
+   git clone https://github.com/inchan/cc-skills.git
+   cd cc-skills
+   ```
+
+2. 빌드 및 설치
+   ```bash
+   npm run build
+   npm run sync
+   ```
+
+3. Claude Code 재시작
+
+### 사용자 설치 (향후)
+
+마켓플레이스를 통한 설치:
 ```bash
-# 마켓플레이스 추가
 /plugin marketplace add inchan/cc-skills
-
-# 설치 및 활성화
-/plugin install cc-skills@inchan-cc-skills
-/plugin enable cc-skills@inchan-cc-skills
+/plugin install cc-skills
 ```
 
 ### 훅 설치 (별도 설치 필요)
@@ -352,6 +365,41 @@ cc-skills/
 
 - Claude Code CLI
 - Node.js 18+
+
+## 개발
+
+### 디렉토리 구조
+
+- `src/` - 원본 소스 파일 (편집용)
+- `plugin/` - 빌드 결과물 (배포용, Git 제외)
+- `scripts/` - 빌드 및 배포 스크립트
+- `tests/` - 검증 스크립트
+
+### 빌드 및 배포
+
+```bash
+# 빌드
+npm run build
+
+# 로컬 마켓플레이스에 동기화 (미리보기)
+npm run sync:dry-run
+
+# 로컬 마켓플레이스에 동기화
+npm run sync
+
+# 새 버전 배포
+npm run publish:patch   # 1.4.0 → 1.4.1
+npm run publish:minor   # 1.4.0 → 1.5.0
+npm run publish:major   # 1.4.0 → 2.0.0
+```
+
+### 개발 워크플로우
+
+1. `src/` 디렉토리에서 스킬/커맨드/훅 편집
+2. `npm run build` 실행 → `plugin/` 생성
+3. `npm run sync` 실행 → 로컬 마켓플레이스 업데이트
+4. Claude Code 재시작하여 테스트
+5. 완료 후 `npm run publish:patch` 실행
 
 ## 라이선스
 

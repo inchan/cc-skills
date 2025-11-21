@@ -1,17 +1,23 @@
 {
   "name": "inchan-cc-skills",
-  "description": "A comprehensive collection of Claude Code extensions including workflow automation, development guidelines, quality assurance tools, and intelligent task routing for enhanced productivity",
   "owner": {
     "name": "inchan",
     "email": "",
     "url": "https://github.com/inchan"
   },
+  "metadata": {
+    "description": "Comprehensive Claude Code extensions: 23 skills, 4 commands, 3 hooks, 3 agents for workflow automation and development guidelines",
+    "homepage": "https://github.com/inchan/cc-skills",
+    "repository": "https://github.com/inchan/cc-skills",
+    "license": "MIT",
+    "tags": ["workflow", "automation", "guidelines", "agents", "productivity", "task-orchestration"]
+  },
   "plugins": [
     {
       "name": "cc-skills",
-      "source": "./",
-      "description": "Complete skills collection including workflow management, development guidelines, and automation tools",
+      "source": "./plugin",
       "version": "1.4.0",
+      "description": "Complete skills collection including workflow management, development guidelines, and automation tools",
       "author": {
         "name": "inchan"
       },
@@ -20,7 +26,10 @@
         "workflows",
         "agents",
         "hooks",
-        "productivity"
+        "productivity",
+        "automation",
+        "development-guidelines",
+        "task-orchestration"
       ]
     }
   ]

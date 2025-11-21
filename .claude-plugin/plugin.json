@@ -20,20 +20,9 @@
     "task-orchestration"
   ],
   "agents": [
-    "./agents/architect.md",
-    "./agents/code-reviewer.md",
-    "./agents/workflow-orchestrator.md"
+    "./src/agents/architect.md",
+    "./src/agents/code-reviewer.md",
+    "./src/agents/workflow-orchestrator.md"
   ],
-  "hooks": {
-    "UserPromptSubmit": [
-      {
-        "hooks": [
-          {
-            "type": "command",
-            "command": "${CLAUDE_PLUGIN_ROOT}/hooks/skill-forced-eval-hook.sh"
-          }
-        ]
-      }
-    ]
-  }
+  "hooks": "./src/hooks/hooks.json"
 }

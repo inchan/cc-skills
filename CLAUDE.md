@@ -2,6 +2,29 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
+## Marketplace Structure
+
+이 프로젝트는 Claude Code 플러그인 마켓플레이스 표준 구조를 따릅니다.
+
+### 디렉토리 구조
+- `src/` - 개발 원본 (스킬/커맨드/훅/에이전트 편집)
+- `plugin/` - 빌드 결과물 (마켓플레이스 배포용)
+- `.claude-plugin/marketplace.json` - 마켓플레이스 메타데이터
+
+### 빌드 프로세스
+```bash
+npm run build        # src/ → plugin/ 복사
+npm run sync         # plugin/ → ~/.claude/plugins/marketplaces/inchan/cc-skills/
+npm run publish      # 버전 업데이트 + Git 태그 + 푸시
+```
+
+### 개발 시 주의사항
+- **src/ 디렉토리에서만 편집**
+- plugin/는 빌드 결과물이므로 직접 편집 금지
+- 변경 후 반드시 `npm run build` 실행
+
+---
+
 ## Repository Purpose
 
 Claude Code 플러그인: 스킬(23개), 에이전트(3개), 훅(3개), 슬래시 커맨드(4개)를 제공하는 워크플로우 자동화 및 개발 가이드라인 툴킷
