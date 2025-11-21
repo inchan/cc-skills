@@ -327,20 +327,101 @@ async function removeSkills() {
     }
   }
 
-  // skill-rules.json 정리 (빈 객체로)
+  // skill-rules.json 정리 (우리 스킬만 제거)
   const rulesPath = path.join(skillsDir, 'skill-rules.json');
   if (fsSync.existsSync(rulesPath)) {
-    if (config.dryRun) {
-      logInfo('[DRY-RUN] skill-rules.json 초기화 예정');
-    } else {
-      const emptyRules = {
-        version: '1.0',
-        description: 'Skill activation triggers for Claude Code.',
-        skills: {}
-      };
-      await fs.writeFile(rulesPath, JSON.stringify(emptyRules, null, 2));
+    try {
+      const content = await fs.readFile(rulesPath, 'utf8');
+      const rules = JSON.parse(content);
+      let originalSkillCount = Object.keys(rules.skills || {}).length;
+
+      // 우리 플러그인 스킬만 제거
+      SKILLS_TO_REMOVE.forEach(skill => {
+        if (rules.skills && rules.skills[skill]) {
+          delete rules.skills[skill];
+        }
+      });
+
+      let remainingSkillCount = Object.keys(rules.skills || {}).length;
+
+      if (config.dryRun) {
+        logInfo(`[DRY-RUN] skill-rules.json 정리 예정 (${originalSkillCount - remainingSkillCount}개 제거)`);
+      } else {
+        await fs.writeFile(rulesPath, JSON.stringify(rules, null, 2));
+      }
+
+      // 남은 스킬이 없으면 파일 삭제
+      if (remainingSkillCount === 0) {
+        if (config.dryRun) {
+          logInfo('[DRY-RUN] skill-rules.json 제거 예정 (남은 스킬 없음)');
+        } else {
+          await fs.unlink(rulesPath);
+          logInfo('skill-rules.json 제거됨 (남은 스킬 없음)');
+        }
+      }
+
+      config.stats.cleaned.push('skill-rules.json');
+    } catch (e) {
+      logWarning(`skill-rules.json 처리 실패: ${e.message}`);
     }
-    config.stats.cleaned.push('skill-rules.json');
+  }
+
+  // README.md 처리 (우리 플러그인 것인지 확인 후 제거)
+  const readmePath = path.join(skillsDir, 'README.md');
+  if (fsSync.existsSync(readmePath)) {
+    try {
+      const content = await fs.readFile(readmePath, 'utf8');
+
+      // 우리 플러그인의 README 시그니처 확인
+      const isOurReadme = content.includes('Production-tested skills for Claude Code') ||
+                          content.includes('skill-developer (Meta-Skill)') ||
+                          content.includes('backend-dev-guidelines');
+
+      if (isOurReadme) {
+        // skills 폴더에 다른 스킬이 남아있는지 확인
+        const entries = await fs.readdir(skillsDir, { withFileTypes: true });
+        const remainingSkills = entries.filter(e =>
+          e.isDirectory() &&
+          !e.name.startsWith('.') &&
+          !e.name.endsWith('.old')
+        );
+
+        if (remainingSkills.length === 0) {
+          // 남은 스킬이 없으면 README 제거
+          if (config.dryRun) {
+            logInfo('[DRY-RUN] README.md 제거 예정 (남은 스킬 없음)');
+          } else {
+            await fs.unlink(readmePath);
+            logInfo('README.md 제거됨 (남은 스킬 없음)');
+          }
+          config.stats.removed.push('skills/README.md');
+        } else {
+          logInfo(`README.md 유지됨 (${remainingSkills.length}개 사용자 스킬 존재)`);
+        }
+      } else {
+        logInfo('README.md 유지됨 (사용자 커스텀 파일)');
+      }
+    } catch (e) {
+      logWarning(`README.md 처리 실패: ${e.message}`);
+    }
+  }
+
+  // skills 폴더가 비었는지 확인 후 제거
+  try {
+    const entries = await fs.readdir(skillsDir);
+    const hasContent = entries.some(entry => !entry.startsWith('.'));
+
+    if (!hasContent) {
+      if (config.dryRun) {
+        logInfo('[DRY-RUN] skills 폴더 제거 예정 (비어있음)');
+      } else {
+        await fs.rm(skillsDir, { recursive: true, force: true });
+        logInfo('skills 폴더 제거됨 (비어있음)');
+      }
+      config.stats.removed.push('skills/');
+    }
+  } catch (e) {
+    // 폴더가 없거나 접근 불가
   }
 
   logSuccess(`${count}개 스킬 제거 완료`);

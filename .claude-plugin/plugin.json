@@ -23,5 +23,17 @@
     "./agents/architect.md",
     "./agents/code-reviewer.md",
     "./agents/workflow-orchestrator.md"
-  ]
+  ],
+  "hooks": {
+    "UserPromptSubmit": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "${CLAUDE_PLUGIN_ROOT}/hooks/skill-forced-eval-hook.sh"
+          }
+        ]
+      }
+    ]
+  }
 }
