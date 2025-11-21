@@ -4,15 +4,51 @@
     "name": "inchan"
   },
   "metadata": {
-    "description": "Plugins by inchan",
+    "description": "Modular Claude Code plugins collection - workflow automation, dev guidelines, quality tools",
     "homepage": "https://github.com/inchan/cc-skills"
   },
   "plugins": [
     {
-      "name": "cc-skills",
-      "version": "1.4.0",
-      "source": "./plugin",
-      "description": "Claude Code skills and hooks collection - extending Claude Code with specialized workflows, agents, and development guidelines"
+      "name": "workflow-automation",
+      "version": "2.0.0",
+      "source": "./plugins/workflow-automation",
+      "description": "Task orchestration with complexity-based routing"
+    },
+    {
+      "name": "dev-guidelines",
+      "version": "2.0.0",
+      "source": "./plugins/dev-guidelines",
+      "description": "Frontend/Backend development patterns"
+    },
+    {
+      "name": "tool-creators",
+      "version": "2.0.0",
+      "source": "./plugins/tool-creators",
+      "description": "Create Skills/Commands/Agents/Hooks"
+    },
+    {
+      "name": "quality-review",
+      "version": "2.0.0",
+      "source": "./plugins/quality-review",
+      "description": "Code quality evaluation and review"
+    },
+    {
+      "name": "ai-integration",
+      "version": "2.0.0",
+      "source": "./plugins/ai-integration",
+      "description": "External AI CLI integration"
+    },
+    {
+      "name": "prompt-enhancement",
+      "version": "2.0.0",
+      "source": "./plugins/prompt-enhancement",
+      "description": "Meta-prompt generation"
+    },
+    {
+      "name": "utilities",
+      "version": "2.0.0",
+      "source": "./plugins/utilities",
+      "description": "Utility tools"
     }
   ]
 }
