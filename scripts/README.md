@@ -115,21 +115,91 @@ node scripts/uninstall-skills.js --path /project/.claude --skill prompt-enhancer
 
 ---
 
-### build.js
+### analyze-dependencies.js
 
-플러그인을 빌드하여 `plugin/` 디렉토리에 배포 가능한 형태로 생성합니다.
+스킬 간 의존성을 분석하고 시각화합니다.
 
 #### 사용법
 
 ```bash
-npm run build
+node scripts/analyze-dependencies.js
 ```
 
 #### 동작
 
-- `src/` 디렉토리의 모든 스킬, 커맨드, 훅, 에이전트를 `plugin/` 디렉토리로 복사
-- `.claude-plugin/plugin.json` 복사
-- 빌드 완료 메시지 출력
+- 모든 플러그인의 skill-rules.json 스캔
+- 스킬 간 참조 관계 분석
+- `tests/dependency-analysis.json` 생성
+- 의존성 그래프 출력
+
+#### 출력 예시
+
+```json
+{
+  "skills": {
+    "agent-workflow-manager": {
+      "dependencies": ["intelligent-task-router"],
+      "dependents": []
+    }
+  }
+}
+```
+
+---
+
+### split-skill-rules.js
+
+단일 skill-rules.json을 플러그인별로 분할합니다 (v2.0.0 마이그레이션용).
+
+#### 사용법
+
+```bash
+node scripts/split-skill-rules.js
+```
+
+#### 동작
+
+- 루트의 skill-rules.json 읽기
+- 각 스킬을 해당 플러그인 폴더로 분배
+- `plugins/*/skills/skill-rules.json` 생성
+- 분할 결과 리포트 출력
+
+#### 예시
+
+```
+입력: skill-rules.json (23개 스킬)
+출력:
+  - plugins/workflow-automation/skills/skill-rules.json (7개)
+  - plugins/dev-guidelines/skills/skill-rules.json (3개)
+  - ...
+```
+
+---
+
+## 마이그레이션 스크립트 (아카이브)
+
+다음 스크립트들은 v1.x → v2.0.0 마이그레이션 완료 후 `docs/archive/migration-scripts/`로 이동되었습니다.
+
+### migrate-to-multi-plugin.sh (아카이브됨)
+
+단일 플러그인 구조를 7개 독립 플러그인으로 마이그레이션합니다.
+
+**위치**: `docs/archive/migration-scripts/migrate-to-multi-plugin.sh`
+
+#### 마이그레이션 프로세스
+
+1. **Phase 0**: 의존성 분석
+2. **Phase 1**: 플러그인 구조 생성
+3. **Phase 2**: 스킬 분산
+4. **Phase 3**: skill-rules.json 분할
+5. **Phase 4**: marketplace.json 생성
+6. **Phase 5**: 검증
+
+### rollback-migration.sh (아카이브됨)
+
+마이그레이션을 롤백합니다.
+
+**위치**: `docs/archive/migration-scripts/rollback-migration.sh`
 
 ---
 
@@ -166,17 +236,12 @@ node scripts/publish.js --minor --push
    - 새 버전: CLI 인자 또는 대화형 선택
 
 3. **버전 업데이트**
-   - `.claude-plugin/plugin.json` → `version` 필드
-   - `.claude-plugin/marketplace.json` → `plugins[0].version` 필드
+   - `.claude-plugin/marketplace.json` → `plugins[*].version` 필드
+   - 7개 플러그인 각각의 `plugin.json`
 
-4. **빌드 실행**
+4. **Git 작업**
    ```bash
-   npm run build
-   ```
-
-5. **Git 작업**
-   ```bash
-   git add .claude-plugin/plugin.json .claude-plugin/marketplace.json plugin/
+   git add .claude-plugin/marketplace.json plugins/
    git commit -m "chore: Release v${VERSION}"
    git tag "v${VERSION}"
    ```
@@ -227,30 +292,34 @@ npm run sync
 
 ## 개발 가이드
 
-### 일반적인 개발 사이클
+### 일반적인 개발 사이클 (v2.0.0)
 
 ```bash
-# 1. 코드 수정 (src/ 디렉토리)
-vim src/skills/my-skill/SKILL.md
+# 1. 코드 수정 (plugins/ 디렉토리)
+vim plugins/workflow-automation/skills/my-skill/SKILL.md
 
-# 2. 빌드
-npm run build
+# 2. 로컬 테스트
+# Claude Code 재시작 (빌드 불필요 - 직접 Git 추적)
 
-# 3. 로컬 테스트
-npm run sync
-# Claude Code 재시작
-
-# 4. 변경사항 커밋
-git add .
+# 3. 변경사항 커밋
+git add plugins/
 git commit -m "feat: add new skill"
 
-# 5. 배포 (버전 증가 + 빌드 + Git 태그)
+# 4. 배포 (버전 증가 + Git 태그)
 npm run publish:patch
 
-# 6. 푸시 (선택)
+# 5. 푸시 (선택)
 git push origin main
-git push origin v1.4.1
+git push origin v2.0.1
 ```
+
+#### v1.x와의 차이점
+
+| 항목 | v1.x | v2.0.0 |
+|------|------|--------|
+| 구조 | src/ → build → plugin/ | plugins/ (직접 Git 추적) |
+| 빌드 | npm run build 필요 | 빌드 불필요 |
+| 테스트 | sync 후 재시작 | 재시작만 |
 
 ### 빠른 배포 (자동 푸시)
 
@@ -282,21 +351,19 @@ git commit -m "your message"
 git stash
 ```
 
-#### "빌드 실패" 오류
+#### 플러그인 검증 실패
 
-**원인:** `npm run build` 실행 중 오류 발생
+**원인:** plugin.json 또는 skill-rules.json 형식 오류
 
 **해결:**
 ```bash
-# 빌드 로그 확인
-npm run build
+# JSON 유효성 검증
+node tests/validate-skill-rules.js
 
-# plugin/ 디렉토리 권한 확인
-ls -la plugin/
-
-# 필요시 plugin/ 디렉토리 삭제 후 재빌드
-rm -rf plugin/
-npm run build
+# 플러그인 JSON 검증
+for plugin in plugins/*/; do
+  node -e "JSON.parse(require('fs').readFileSync('${plugin}.claude-plugin/plugin.json'))"
+done
 ```
 
 #### 버전 충돌

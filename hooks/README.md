@@ -21,10 +21,60 @@ node scripts/install-hooks.js --dry-run
 
 ## 포함된 훅
 
-### 1. 🎯 Skill Activation Prompt (UserPromptSubmit)
-사용자 프롬프트를 분석하여 적절한 스킬을 자동으로 제안합니다.
+### 1. 🎯 Skill Activation Hook (UserPromptSubmit)
 
-**파일**: `skill-forced-eval-hook.sh`
+사용자 프롬프트를 분석하여 적절한 스킬을 자동으로 제안합니다 (v2.0.0 다중플러그인 지원).
+
+**파일**: `skill-activation-hook.sh`
+
+#### 다중플러그인 집계 메커니즘
+
+v2.0.0부터 모든 플러그인의 skill-rules.json을 자동으로 집계합니다:
+
+```bash
+# 1. 플러그인 스캔
+for plugin_dir in "${REPO_ROOT}/plugins/"*/; do
+    if [[ -f "${plugin_dir}skills/skill-rules.json" ]]; then
+        # skill-rules.json 발견
+    fi
+done
+
+# 2. 스킬 집계 및 네임스페이스 포맷
+# 출력: priority|plugin|skill-name|keywords
+echo "high|workflow-automation|intelligent-task-router|작업,복잡도"
+
+# 3. 플러그인별 그룹핑
+📦 Plugin: workflow-automation
+  - intelligent-task-router [priority: high]
+  - parallel-task-executor [priority: high]
+
+📦 Plugin: dev-guidelines
+  - frontend-dev-guidelines [priority: high]
+  - backend-dev-guidelines [priority: high]
+```
+
+#### JSON 출력 형식
+
+```json
+{
+  "hookSpecificOutput": {
+    "hookEventName": "UserPromptSubmit",
+    "additionalContext": "스킬 목록 및 활성화 안내"
+  }
+}
+```
+
+#### 로그 파일
+
+실행 로그는 `/tmp/claude-skill-activation.log`에 저장됩니다:
+
+```bash
+[2025-11-21 21:38:42] Multi-plugin skill-activation-hook executed
+[DEBUG] Repository root: /Users/.../cc-skills
+[DEBUG] Found: plugins/workflow-automation/skills/skill-rules.json
+[DEBUG] Total skill-rules.json files: 7
+[DEBUG] Total skills aggregated: 20
+```
 
 
 

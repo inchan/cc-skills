@@ -99,6 +99,57 @@ bash tests/validate-skills.sh
 
 ---
 
+### integration-test.sh
+
+전체 프로젝트의 통합 테스트를 실행합니다 (v2.0.0).
+
+#### 사용법
+
+```bash
+bash tests/integration-test.sh
+```
+
+#### 테스트 내용
+
+8개 테스트 스위트:
+1. **플러그인 JSON 검증** - 7개 플러그인의 plugin.json 유효성
+2. **skill-rules.json 검증** - 7개 플러그인의 skill-rules.json
+3. **Hook 집계 검증** - skill-activation-hook.sh의 다중플러그인 집계
+4. **Marketplace 검증** - marketplace.json 유효성
+5. **의존성 검증** - package.json 및 node_modules
+6. **스킬 개수 확인** - 23개 스킬 존재 여부
+7. **커맨드 확인** - 4개 커맨드 존재 여부
+8. **에이전트 확인** - 3개 에이전트 존재 여부
+
+#### 출력 예시
+
+```
+✅ 플러그인 JSON 검증: 7/7 통과
+✅ skill-rules.json 검증: 7/7 통과
+✅ Hook 집계: 20개 스킬 감지
+✅ 전체 테스트 통과!
+```
+
+---
+
+### dependency-analysis.json
+
+스킬 간 의존성 분석 결과입니다.
+
+#### 생성 방법
+
+```bash
+node scripts/analyze-dependencies.js
+```
+
+#### 내용
+
+- 스킬 간 참조 관계
+- 의존성 그래프
+- 순환 참조 감지
+
+---
+
 ## 테스트 결과 파일
 
 ### activation-test-results.json
@@ -131,23 +182,29 @@ bash tests/validate-skills.sh
 - **통합 테스트**: `run-*.js` - 여러 검증을 조합
 - **결과 파일**: JSON 또는 Markdown 형식으로 저장
 
-### 실행 순서
+### 실행 순서 (v2.0.0)
 
 전체 검증을 실행하려면:
 
 ```bash
-# 1. 스킬 규칙 검증
-node tests/validate-skill-rules.js
+# 1. 통합 테스트 (권장 - 전체 검증)
+bash tests/integration-test.sh
 
-# 2. 스킬 구조 검증
-bash tests/validate-skills.sh
+# 2. 개별 검증 (필요시)
+node tests/validate-skill-rules.js    # 스킬 규칙
+bash tests/validate-skills.sh          # 스킬 구조
+node tests/run-activation-tests.js     # 활성화 테스트
 
-# 3. 활성화 테스트
-node tests/run-activation-tests.js
-
-# 4. 단위 테스트
+# 3. 단위 테스트
 node tests/install-skills.test.js
 node tests/uninstall-skills.test.js
+```
+
+#### 빠른 검증
+
+```bash
+# v2.0.0 빠른 체크
+bash tests/integration-test.sh && echo "✅ 모든 테스트 통과!"
 ```
 
 ---
