@@ -1,0 +1,12 @@
+{
+  "name": "quality-review",
+  "version": "2.0.0",
+  "description": "5-dimension quality evaluation and P0/P1/P2 prioritized feedback",
+  "author": {
+    "name": "inchan",
+    "url": "https://github.com/inchan"
+  },
+  "license": "MIT",
+  "skills": ["./skills"],
+  "agents": ["./agents"]
+}

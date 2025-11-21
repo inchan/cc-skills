@@ -2,89 +2,120 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
-## Marketplace Structure
+## Multi-Plugin Architecture (v2.0.0)
 
-이 프로젝트는 Claude Code 플러그인 마켓플레이스 표준 구조를 따릅니다.
+이 프로젝트는 anthropics/claude-code 패턴을 따라 **7개 독립 플러그인**으로 구성됩니다.
+
+### 플러그인 목록
+
+| 플러그인 | 스킬 수 | 설명 |
+|---------|--------|------|
+| **workflow-automation** | 7 | 복잡도 기반 작업 라우팅 (순차/병렬/동적) |
+| **dev-guidelines** | 3 | Frontend/Backend 개발 패턴, 에러 추적 |
+| **tool-creators** | 5 | Skill/Command/Agent/Hook 생성 도구 |
+| **quality-review** | 2 | 5차원 품질 평가, P0/P1/P2 피드백 |
+| **ai-integration** | 3 | 외부 AI CLI 통합 (codex, qwen, aider 등) |
+| **prompt-enhancement** | 2 | 메타 프롬프트 생성, 프롬프트 최적화 |
+| **utilities** | 1 | 유틸리티 도구 (route-tester) |
+
+**총계**: 23 스킬, 4 커맨드, 3 에이전트
 
 ### 디렉토리 구조
-- `plugin/` - 빌드 결과물 (마켓플레이스 배포용, Git 제외)
-- `.claude-plugin/marketplace.json` - 마켓플레이스 메타데이터
-
-**주의**: `plugin/` 디렉토리는 빌드 스크립트로 자동 생성되며 Git에서 제외됩니다.
-
-### 빌드 프로세스
-```bash
-npm run build        # 빌드 (plugin/ 생성)
-npm run sync         # plugin/ → ~/.claude/plugins/marketplaces/inchan/cc-skills/
-npm run publish      # 버전 업데이트 + Git 태그 + 푸시
-```
-
-### 개발 시 주의사항
-- `plugin/`는 빌드 결과물이므로 직접 편집 금지
-- 변경 후 반드시 `npm run build` 실행
-
----
-
-## Repository Purpose
-
-Claude Code 플러그인: 스킬(23개), 에이전트(3개), 훅(3개), 슬래시 커맨드(4개)를 제공하는 워크플로우 자동화 및 개발 가이드라인 툴킷
-
-## Directory Structure
 
 ```
-skills/               # 23 skills (SKILL.md + bundled resources)
-├── skill-rules.json  # Auto-activation triggers
-commands/             # 4 slash commands (.md files)
-hooks/                # 3 event hooks (JS/shell + hooks.json)
-agents/               # 3 subagent definitions
-scripts/              # Installation utilities
-.claude-plugin/       # Plugin metadata (plugin.json)
-settings.local.json   # Local hook configuration
+plugins/
+├── workflow-automation/
+│   ├── .claude-plugin/plugin.json
+│   ├── skills/ (7개)
+│   ├── commands/ (4개)
+│   └── agents/ (1개)
+├── dev-guidelines/
+│   ├── .claude-plugin/plugin.json
+│   └── skills/ (3개)
+├── tool-creators/
+│   ├── .claude-plugin/plugin.json
+│   └── skills/ (5개)
+├── quality-review/
+│   ├── .claude-plugin/plugin.json
+│   ├── skills/ (2개)
+│   └── agents/ (2개)
+├── ai-integration/
+│   ├── .claude-plugin/plugin.json
+│   └── skills/ (3개)
+├── prompt-enhancement/
+│   ├── .claude-plugin/plugin.json
+│   └── skills/ (2개)
+└── utilities/
+    ├── .claude-plugin/plugin.json
+    └── skills/ (1개)
+
+hooks/                      # 전역 hooks (UserPromptSubmit, Stop 등)
+scripts/                    # 유틸리티 스크립트
+.claude-plugin/             # Marketplace 메타데이터
+    └── marketplace.json
 ```
+
+### 배포 방식
+
+**직접 Git 추적** - 빌드 프로세스 없음
+- `plugins/` 디렉토리를 직접 Git에 커밋
+- 변경 시 바로 반영
+- anthropics/claude-code와 동일한 패턴
 
 ## Development Commands
 
-### Testing & Validation
+### Dependency Analysis
 ```bash
-# Validate skill-rules.json syntax and structure
-node tests/validate-skill-rules.js
-
-# Test skill auto-activation patterns
-node tests/run-activation-tests.js
-
-# Validate all skills
-bash tests/validate-skills.sh
-
-# Run installation tests
-node tests/install-skills.test.js
+# Phase 0: 스킬 간 의존성 분석
+node scripts/analyze-dependencies.js
+# 결과: tests/dependency-analysis.json
 ```
 
-### Installation Scripts
+### Migration Scripts
 ```bash
-# Install to global (~/.claude) or workspace (./.claude)
-node scripts/install-skills.js
-node scripts/install-skills.js --target global
-node scripts/install-skills.js --target workspace
-node scripts/install-skills.js --dry-run  # Preview only
+# 단일 플러그인 → 다중 플러그인 마이그레이션
+bash scripts/migrate-to-multi-plugin.sh
+
+# skill-rules.json 플러그인별 분할
+node scripts/split-skill-rules.js
 ```
 
-### Skill Development
-```bash
-# Create new skill (use skill-developer skill for guidance)
-# Skill structure:
-# skills/my-skill/
-# ├── SKILL.md              # Main skill prompt (500 line limit)
-# └── resources/            # Bundled files (templates, examples)
+### Plugin Development
 
-# Register in skill-rules.json with keywords/intentPatterns
-# Test activation: node tests/run-activation-tests.js
+#### 새 플러그인 추가
+```
+plugins/new-plugin/
+├── .claude-plugin/
+│   └── plugin.json          # 메타데이터
+├── skills/
+│   ├── skill-rules.json     # 스킬 트리거
+│   └── skill-name/
+│       ├── SKILL.md          # 500줄 제한
+│       └── resources/       # 번들 리소스
+├── commands/                # 슬래시 커맨드 (선택)
+├── agents/                  # 에이전트 (선택)
+└── hooks/                   # 훅 (선택)
+```
+
+#### marketplace.json 업데이트
+```json
+{
+  "plugins": [
+    {
+      "name": "new-plugin",
+      "version": "2.0.0",
+      "source": "./plugins/new-plugin",
+      "description": "Plugin description"
+    }
+  ]
+}
 ```
 
 ## Key Architecture Patterns
 
 ### Skill Auto-Activation
-- `skills/skill-rules.json` - Keyword/intent pattern matching
-- `hooks/skill-forced-eval-hook.sh` - UserPromptSubmit hook analyzes prompts
+- **각 플러그인**: `plugins/*/skills/skill-rules.json` - 플러그인별 트리거
+- **전역 훅**: `hooks/skill-activation-hook.sh` - 모든 플러그인 skill-rules.json 통합
 - Priority levels: critical > high > medium > low
 
 ### Tool Type Selection Guide
