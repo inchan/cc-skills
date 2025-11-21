@@ -162,7 +162,7 @@ function testSkillsList() {
     'hooks-creator',
     'intelligent-task-router',
     'iterative-quality-enhancer',
-    'meta-prompt-generator-v2',
+    'meta-prompt-generator',
     'parallel-task-executor',
     'prompt-enhancer',
     'reflection-review',

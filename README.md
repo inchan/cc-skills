@@ -13,8 +13,8 @@ flowchart TB
     end
 
     subgraph Hooks["훅 시스템"]
-        UPS[UserPromptSubmit<br/>skill-activation-prompt]
-        PTU[PostToolUse<br/>post-tool-use-tracker]
+        UPS[UserPromptSubmit<br/>skill-forced-eval-hook]
+
         SH[Stop<br/>lint-and-translate]
     end
 
@@ -74,7 +74,7 @@ flowchart TB
     Creators --> |가이드 참조| Guidelines
     Agents --> |가이드 참조| Guidelines
 
-    PTU --> |파일 추적| Quality
+
     SH --> |최종 검증| Quality
 ```
 
@@ -239,7 +239,7 @@ node scripts/install-hooks.js --dry-run
 <details>
 <summary><b>프롬프트</b> (2개)</summary>
 
-**meta-prompt-generator-v2**
+**meta-prompt-generator**
 - 슬래시 커맨드용 프롬프트 생성
 - 구조화된 단계별 병렬 처리 가능한 프롬프트
 
@@ -286,12 +286,9 @@ node scripts/install-hooks.js --dry-run
 ## 훅
 
 **UserPromptSubmit**
-- `skill-activation-prompt.js`
+- `skill-forced-eval-hook.sh`
 - 키워드/인텐트 매칭 → 스킬 제안
 
-**PostToolUse**
-- `post-tool-use-tracker.sh`
-- Edit/Write 후 파일 추적
 
 **Stop**
 - `stop-hook-lint-and-translate.sh`

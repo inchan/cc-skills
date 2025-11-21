@@ -409,7 +409,7 @@ unified-tool-generator/
 User: "Create a slash command"
   │
   ▼
-skill-activation-prompt.ts
+skill-forced-eval-hook.sh
   │
   ├─ Analyze: "create" + "command"
   ├─ Match: skill-rules.json patterns

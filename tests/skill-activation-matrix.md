@@ -8,7 +8,7 @@
 ## 테스트 방법
 
 1. 각 테스트 프롬프트를 Claude Code에 입력
-2. skill-activation-prompt.ts 훅의 제안 확인
+2. skill-forced-eval-hook.sh 훅의 출력 확인
 3. 예상 스킬이 제안되면 ✅, 아니면 ❌ 기록
 
 ---
@@ -24,12 +24,12 @@
 
 ---
 
-### 2. meta-prompt-generator-v2 (priority: high)
+### 2. meta-prompt-generator (priority: high)
 
 | # | 테스트 프롬프트 | 예상 결과 | 실제 결과 | 상태 |
 |---|----------------|----------|----------|------|
-| 2.1 | "슬래시 커맨드 생성해줘" | meta-prompt-generator-v2 | - | ⏳ |
-| 2.2 | "프롬프트 만들어줘" | meta-prompt-generator-v2 | - | ⏳ |
+| 2.1 | "슬래시 커맨드 생성해줘" | meta-prompt-generator | - | ⏳ |
+| 2.2 | "프롬프트 만들어줘" | meta-prompt-generator | - | ⏳ |
 
 ---
 

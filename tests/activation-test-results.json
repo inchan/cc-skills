@@ -45,12 +45,12 @@
     {
       "id": "2.1",
       "prompt": "슬래시 커맨드 생성해줘",
-      "expected": "meta-prompt-generator-v2",
-      "actual": "meta-prompt-generator-v2",
+      "expected": "meta-prompt-generator",
+      "actual": "meta-prompt-generator",
       "passed": true,
       "allMatches": [
         {
-          "skill": "meta-prompt-generator-v2",
+          "skill": "meta-prompt-generator",
           "score": 60,
           "priority": "high",
           "reasons": [
@@ -65,12 +65,12 @@
     {
       "id": "2.2",
       "prompt": "프롬프트 만들어줘",
-      "expected": "meta-prompt-generator-v2",
-      "actual": "meta-prompt-generator-v2",
+      "expected": "meta-prompt-generator",
+      "actual": "meta-prompt-generator",
       "passed": true,
       "allMatches": [
         {
-          "skill": "meta-prompt-generator-v2",
+          "skill": "meta-prompt-generator",
           "score": 30,
           "priority": "high",
           "reasons": [

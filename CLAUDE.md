@@ -61,7 +61,7 @@ node scripts/install-skills.js --dry-run  # Preview only
 
 ### Skill Auto-Activation
 - `skills/skill-rules.json` - Keyword/intent pattern matching
-- `hooks/skill-activation-prompt.js` - UserPromptSubmit hook analyzes prompts
+- `hooks/skill-forced-eval-hook.sh` - UserPromptSubmit hook analyzes prompts
 - Priority levels: critical > high > medium > low
 
 ### Tool Type Selection Guide
@@ -70,11 +70,11 @@ node scripts/install-skills.js --dry-run  # Preview only
 | **Command** | User-invoked shortcuts | `/auto-workflow`, `/workflow-simple` |
 | **Skill** | Domain expertise + resources | `frontend-dev-guidelines`, `error-tracking` |
 | **Subagent** | Focused AI with permissions | `code-reviewer`, `architect` |
-| **Hook** | Event-driven automation | `skill-activation-prompt`, `post-tool-use-tracker` |
+| **Hook** | Event-driven automation | `skill-forced-eval-hook` |
 
 ### Workflow Orchestration
 ```
-User Prompt → skill-activation-prompt hook
+User Prompt → skill-forced-eval-hook
            → intelligent-task-router (complexity 0.0-1.0)
            → Sequential (< 0.3) / Parallel (0.3-0.7) / Orchestrator (> 0.7)
            → iterative-quality-enhancer
@@ -105,12 +105,9 @@ User Prompt → skill-activation-prompt hook
   "hooks": {
     "UserPromptSubmit": [{
       "matcher": "",
-      "hooks": [{"type": "command", "command": "node ${CLAUDE_PLUGIN_ROOT}/hooks/skill-activation-prompt.js"}]
+      "hooks": [{"type": "command", "command": "${CLAUDE_PLUGIN_ROOT}/hooks/skill-forced-eval-hook.sh"}]
     }],
-    "PostToolUse": [{
-      "matcher": "Edit|Write",
-      "hooks": [{"type": "command", "command": "node ${CLAUDE_PLUGIN_ROOT}/hooks/post-tool-use-tracker.js"}]
-    }]
+
   }
 }
 ```
@@ -211,22 +208,23 @@ node tests/run-activation-tests.js  # Verify triggers work
 
 ## Plugin Status Summary
 
-**스킬**: 23개 (20개 skill-rules.json 등록, 87% 등록률)
+**스킬**: 23개 (20개 skill-rules.json 등록)
 **에이전트**: 3개 (code-reviewer, architect, workflow-orchestrator)
 **훅**: 3개 (UserPromptSubmit, PostToolUse, Stop)
 **슬래시 커맨드**: 4개 (auto-workflow, workflow-simple/parallel/complex)
 
-### Recent Changes (v1.4.1)
-- ✅ 플러그인 구조로 완전 마이그레이션 (.claude/ 제거, 루트 레벨 구조)
-- ✅ hooks.json에 ${CLAUDE_PLUGIN_ROOT} 환경 변수 사용
-- ✅ 20개 스킬 skill-rules.json 등록 (87% 등록률)
+### Recent Changes (v1.5.0)
+- ✅ 플러그인 구조로 완전 마이그레이션
+- ✅ hooks/node_modules 제거 (TypeScript → JavaScript 마이그레이션 완료)
+- ✅ meta-prompt-generator 통합 (v2 및 .old 버전 제거)
+- ✅ 20개 스킬 skill-rules.json 등록
 - ✅ 워크플로우 슬래시 커맨드 4개 생성
 - ✅ dual-ai-loop으로 AI 연동 통합
 
-### Remaining Tasks
-- 미등록 스킬 3개 등록 검토 (agent-workflow-orchestrator, cli-updater, web-to-markdown)
-- 각 스킬 예제 강화
-- 훅 성능 최적화
+### Unregistered Skills (intentionally)
+- **agent-workflow-orchestrator**: 고급 기능, 명시적 호출 권장 (agent-workflow-manager로 충분)
+- **cli-updater**: dual-ai-loop 내부 호출용, 자동 트리거 불필요
+- **skill-creator.old**: 레거시 버전, skill-developer로 대체됨
 
 자세한 프로젝트 계획 및 로드맵은 이전 버전 CLAUDE.md 또는 `docs/` 디렉토리를 참조하세요.
 

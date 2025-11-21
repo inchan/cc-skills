@@ -21,9 +21,7 @@ User submits prompt
     ↓
 .claude/settings.json registers hook
     ↓
-skill-activation-prompt.sh executes
-    ↓
-npx tsx skill-activation-prompt.ts
+skill-forced-eval-hook.sh executes
     ↓
 Hook reads stdin (JSON with prompt)
     ↓

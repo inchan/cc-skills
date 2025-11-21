@@ -17,9 +17,9 @@ const TEST_CASES = [
   { id: '1.1', prompt: '새로운 스킬을 만들어줘', expected: 'skill-developer' },
   { id: '1.2', prompt: 'skill-rules.json 수정 방법 알려줘', expected: 'skill-developer' },
 
-  // 2. meta-prompt-generator-v2
-  { id: '2.1', prompt: '슬래시 커맨드 생성해줘', expected: 'meta-prompt-generator-v2' },
-  { id: '2.2', prompt: '프롬프트 만들어줘', expected: 'meta-prompt-generator-v2' },
+  // 2. meta-prompt-generator
+  { id: '2.1', prompt: '슬래시 커맨드 생성해줘', expected: 'meta-prompt-generator' },
+  { id: '2.2', prompt: '프롬프트 만들어줘', expected: 'meta-prompt-generator' },
 
   // 3. backend-dev-guidelines
   { id: '3.1', prompt: '새 API 엔드포인트 추가해줘', expected: 'backend-dev-guidelines' },

@@ -29,7 +29,7 @@
                 ]
             }
         },
-        "meta-prompt-generator-v2": {
+        "meta-prompt-generator": {
             "type": "domain",
             "enforcement": "suggest",
             "priority": "high",

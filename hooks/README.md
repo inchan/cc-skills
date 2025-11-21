@@ -24,14 +24,11 @@ node scripts/install-hooks.js --dry-run
 ### 1. 🎯 Skill Activation Prompt (UserPromptSubmit)
 사용자 프롬프트를 분석하여 적절한 스킬을 자동으로 제안합니다.
 
-**파일**: `skill-activation-prompt.ts`
+**파일**: `skill-forced-eval-hook.sh`
 
-### 2. 📊 Post Tool Use Tracker (PostToolUse)
-Edit/Write 도구 사용 후 변경 사항을 추적합니다.
 
-**파일**: `post-tool-use-tracker.sh`
 
-### 3. 🔄 Interactive Lint & Translate (Stop)
+### 2. 🔄 Interactive Lint & Translate (Stop)
 Claude Code 사용 종료 시 실행되는 대화형 훅입니다. 변경된 파일에 대해 ESLint, Stylelint, i18n 업데이트 작업을 사용자가 선택하여 실행할 수 있습니다.
 
 **파일**: `stop-hook-lint-and-translate.sh`

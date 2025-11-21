@@ -363,7 +363,7 @@ metadata.md (150줄) - 메타데이터 편집
 
 ```yaml
 ---
-name: meta-prompt-generator-v2
+name: meta-prompt-generator
 description: 적응형 복잡도, 자기 평가, 비용 인식을 갖춘 차세대 메타프롬프트 생성기
 ---
 
@@ -382,7 +382,7 @@ description: 적응형 복잡도, 자기 평가, 비용 인식을 갖춘 차세�
 
 ```yaml
 ---
-name: meta-prompt-generator-v2
+name: meta-prompt-generator
 description: 슬래시 커맨드용 프롬프트 생성. 프롬프트/커맨드 생성 요청 시 사용.
 ---
 

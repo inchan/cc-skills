@@ -322,7 +322,7 @@ cat .claude/skills/skill-rules.json | jq .
 ls -la .claude/hooks/*.sh
 
 # Test hook manually
-./.claude/hooks/skill-activation-prompt.sh
+./.claude/hooks/skill-forced-eval-hook.sh
 ```
 
 ### Skill activates too often

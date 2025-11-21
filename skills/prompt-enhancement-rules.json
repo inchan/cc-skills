@@ -101,7 +101,7 @@
         "명확한 입출력 정의",
         "에러 처리 포함"
       ],
-      "relatedSkill": "meta-prompt-generator-v2",
+      "relatedSkill": "meta-prompt-generator",
       "priority": "high"
     },
 

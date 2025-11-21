@@ -63,7 +63,7 @@ cd cc-skills
 | | skill-generator-tool | 도구 타입 추천 |
 | **AI 연동** | dual-ai-loop | 외부 AI CLI 협업 |
 | | cli-updater | CLI 버전 업데이트 |
-| **프롬프트** | meta-prompt-generator-v2 | 슬래시 커맨드용 프롬프트 생성 |
+| **프롬프트** | meta-prompt-generator | 슬래시 커맨드용 프롬프트 생성 |
 | | prompt-enhancer | 컨텍스트 기반 개선 |
 | **기타** | route-tester | 인증 라우트 테스트 |
 | | web-to-markdown | 웹페이지 변환 |
@@ -78,8 +78,8 @@ cd cc-skills
 
 | 이벤트 | 훅 | 설명 |
 |--------|------|------|
-| UserPromptSubmit | skill-activation-prompt | 프롬프트 분석 후 적합한 스킬 제안 |
-| PostToolUse | post-tool-use-tracker | Edit/Write 후 변경 사항 추적 |
+| UserPromptSubmit | skill-forced-eval-hook | 프롬프트 분석 후 적합한 스킬 제안 |
+
 | Stop | stop-hook-lint-and-translate | 응답 완료 후 린트 및 번역 |
 
 ## 사용법
@@ -132,8 +132,8 @@ cc-skills/
 │   └── workflow-complex.md
 ├── hooks/                       # 플러그인 훅
 │   ├── hooks.json               # 훅 설정
-│   ├── skill-activation-prompt.ts
-│   ├── post-tool-use-tracker.sh
+│   ├── skill-forced-eval-hook.sh
+
 │   └── stop-hook-lint-and-translate.sh
 ├── agents/                      # 서브에이전트 정의
 │   ├── code-reviewer.md
@@ -278,7 +278,7 @@ MIT License
 - ✅ **플러그인 구조 문서 수정**: 실제 디렉토리 구조 반영
   - `.claude/` 디렉토리 제거된 것 반영
   - `skills/`, `commands/`, `hooks/` 루트 레벨 구조 문서화
-- ✅ **Hook 경로 참조 수정**: skill-activation-prompt.ts 플러그인 구조 지원
+- ✅ **Hook 경로 참조 수정**: skill-forced-eval-hook.sh 플러그인 구조 지원
 - ✅ **스킬 개수 업데이트**: 23개 → 29개
 
 ### v1.2.0 (2025-11-19)

@@ -122,7 +122,7 @@ Creating skill without testing if it actually activates.
 ```bash
 # Test trigger manually
 echo '{"prompt":"create a react component"}' | \
-  npx tsx .claude/hooks/skill-activation-prompt.ts
+  bash .claude/hooks/skill-forced-eval-hook.sh
 
 # Verify expected skill appears in suggestions
 ```

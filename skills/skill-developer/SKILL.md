@@ -30,7 +30,7 @@ Automatically activates when you mention:
 ### Two-Hook Architecture
 
 **1. UserPromptSubmit Hook** (Proactive Suggestions)
-- **File**: `.claude/hooks/skill-activation-prompt.ts`
+- **File**: `.claude/hooks/skill-forced-eval-hook.sh`
 - **Trigger**: BEFORE Claude sees user's prompt
 - **Purpose**: Suggest relevant skills based on keywords + intent patterns
 - **Method**: Injects formatted reminder as context (stdout → Claude's input)
@@ -162,7 +162,7 @@ See [SKILL_RULES_REFERENCE.md](SKILL_RULES_REFERENCE.md) for complete schema.
 **Test UserPromptSubmit:**
 ```bash
 echo '{"session_id":"test","prompt":"your test prompt"}' | \
-  npx tsx .claude/hooks/skill-activation-prompt.ts
+  bash .claude/hooks/skill-forced-eval-hook.sh
 ```
 
 **Test PreToolUse:**
@@ -391,7 +391,7 @@ See [TRIGGER_TYPES.md](TRIGGER_TYPES.md) for complete details.
 Test hooks manually:
 ```bash
 # UserPromptSubmit
-echo '{"prompt":"test"}' | npx tsx .claude/hooks/skill-activation-prompt.ts
+echo '{"prompt":"test"}' | bash .claude/hooks/skill-forced-eval-hook.sh
 
 # PreToolUse
 cat <<'EOF' | npx tsx .claude/hooks/skill-verification-guard.ts
@@ -411,7 +411,7 @@ See [TROUBLESHOOTING.md](TROUBLESHOOTING.md) for complete debugging guide.
 - `.claude/settings.json` - Hook registration
 
 **Hooks:**
-- `.claude/hooks/skill-activation-prompt.ts` - UserPromptSubmit
+- `.claude/hooks/skill-forced-eval-hook.sh` - UserPromptSubmit
 - `.claude/hooks/error-handling-reminder.ts` - Stop event (gentle reminders)
 
 **All Skills:**

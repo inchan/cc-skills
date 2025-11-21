@@ -106,7 +106,7 @@ Test the hook manually:
 
 ```bash
 echo '{"session_id":"debug","prompt":"your test prompt here"}' | \
-  npx tsx .claude/hooks/skill-activation-prompt.ts
+  bash .claude/hooks/skill-forced-eval-hook.sh
 ```
 
 Expected: Your skill should appear in the output.
@@ -372,7 +372,7 @@ Expected: Hook entries present
         "hooks": [
           {
             "type": "command",
-            "command": "$CLAUDE_PROJECT_DIR/.claude/hooks/skill-activation-prompt.sh"
+            "command": "$CLAUDE_PROJECT_DIR/.claude/hooks/skill-forced-eval-hook.sh"
           }
         ]
       }
@@ -399,7 +399,7 @@ chmod +x .claude/hooks/*.sh
 
 **Check:**
 ```bash
-head -1 .claude/hooks/skill-activation-prompt.sh
+head -1 .claude/hooks/skill-forced-eval-hook.sh
 ```
 
 Expected: `#!/bin/bash`
@@ -421,17 +421,7 @@ cd .claude/hooks
 npm install
 ```
 
-### 5. TypeScript Compilation Error
 
-**Check:**
-```bash
-cd .claude/hooks
-npx tsc --noEmit skill-activation-prompt.ts
-```
-
-Expected: No output (no errors)
-
-**Fix:** Correct TypeScript syntax errors
 
 ---
 
@@ -494,7 +484,7 @@ Content pattern matching reads entire file - slow for large files.
 
 ```bash
 # UserPromptSubmit
-time echo '{"prompt":"test"}' | npx tsx .claude/hooks/skill-activation-prompt.ts
+time echo '{"prompt":"test"}' | bash .claude/hooks/skill-forced-eval-hook.sh
 
 # PreToolUse
 time cat <<'EOF' | npx tsx .claude/hooks/skill-verification-guard.ts
