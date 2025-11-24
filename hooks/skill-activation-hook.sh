@@ -8,6 +8,9 @@
 
 # Logging
 LOG_FILE="/tmp/claude-skill-activation.log"
+DEBUG_INPUT_FILE="/tmp/claude-hook-input.json"
+DEBUG_OUTPUT_FILE="/tmp/claude-hook-output.json"
+
 echo "[$(date '+%Y-%m-%d %H:%M:%S')] Multi-plugin skill-activation-hook executed" >> "$LOG_FILE"
 
 # Find repository root (where .claude-plugin exists)
@@ -25,11 +28,25 @@ echo "[DEBUG] Repository root: ${REPO_ROOT}" >> "$LOG_FILE"
 
 # Get user prompt from stdin (if available)
 USER_PROMPT=""
+STDIN_INPUT=""
 if [[ -p /dev/stdin ]]; then
-    USER_PROMPT=$(cat)
-fi
+    STDIN_INPUT=$(cat)
+    # Save raw input for debugging
+    echo "$STDIN_INPUT" > "$DEBUG_INPUT_FILE"
+    echo "[DEBUG] STDIN received, saved to $DEBUG_INPUT_FILE" >> "$LOG_FILE"
 
-echo "[DEBUG] User prompt: ${USER_PROMPT}" >> "$LOG_FILE"
+    # Try to parse as JSON
+    if command -v jq &> /dev/null && echo "$STDIN_INPUT" | jq -e . &> /dev/null; then
+        USER_PROMPT=$(echo "$STDIN_INPUT" | jq -r '.prompt // empty')
+        echo "[DEBUG] Parsed JSON input, prompt: ${USER_PROMPT}" >> "$LOG_FILE"
+    else
+        # Treat as plain text
+        USER_PROMPT="$STDIN_INPUT"
+        echo "[DEBUG] Plain text input: ${USER_PROMPT}" >> "$LOG_FILE"
+    fi
+else
+    echo "[DEBUG] No stdin input" >> "$LOG_FILE"
+fi
 
 # Collect all skill-rules.json from plugins
 SKILL_RULES_FILES=()
@@ -149,56 +166,54 @@ if [[ $TOTAL_SKILLS -gt 0 ]]; then
     rm -f "$SORTED_SKILLS"
 fi
 
-OUTPUT_MSG="${OUTPUT_MSG}\nStep 1 - EVALUATE:\nFor each skill above, state: [plugin:skill-name] - YES/NO - [reason]\n\n"
-OUTPUT_MSG="${OUTPUT_MSG}Step 2 - ACTIVATE:\nUse Skill(\"plugin-name:skill-name\") for each YES skill\n"
-OUTPUT_MSG="${OUTPUT_MSG}Example: Skill(\"workflow-automation:intelligent-task-router\")\n\n"
-OUTPUT_MSG="${OUTPUT_MSG}Step 3 - IMPLEMENT:\nProceed with implementation after activation\n\n"
-OUTPUT_MSG="${OUTPUT_MSG}CRITICAL: Skills are now namespaced by plugin (plugin-name:skill-name)"
+# Simple context - no evaluation steps needed
+OUTPUT_MSG="${OUTPUT_MSG}\nNote: Skills are auto-activated when relevant. Use Skill(\"plugin-name:skill-name\") to manually activate.\n"
+OUTPUT_MSG="${OUTPUT_MSG}Example: Skill(\"workflow-automation:intelligent-task-router\")"
 
-# Output as JSON for Claude Code (stdout)
-cat << EOF
-{
-  "hookSpecificOutput": {
-    "hookEventName": "UserPromptSubmit",
-    "additionalContext": "$(echo -e "$OUTPUT_MSG" | sed 's/"/\\"/g' | awk '{printf "%s\\n", $0}')"
-  }
-}
-EOF
-
-# Display progress and summary to user (stderr) - Clean Line Style
+# Build user-friendly message for display
+USER_MSG=""
 if [[ $TOTAL_SKILLS -gt 0 ]]; then
     PLUGIN_COUNT=$(sort -t'|' -k2,2 -u "$MATCHED_SKILLS" | wc -l | xargs)
     MATCHED_SKILLS_COUNT=$(wc -l < "$MATCHED_SKILLS" | xargs)
 
-    # Clean line header
-    echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━" >&2
-    echo "  스킬 활성화" >&2
-    echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━" >&2
-    echo "" >&2
+    USER_MSG="━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n"
+    USER_MSG="${USER_MSG}  스킬 활성화\n"
+    USER_MSG="${USER_MSG}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n"
+    USER_MSG="${USER_MSG}📦 ${PLUGIN_COUNT}개 플러그인 · 🔧 ${MATCHED_SKILLS_COUNT}개 스킬 (전체: ${TOTAL_SKILLS})\n\n"
+    USER_MSG="${USER_MSG}🎯 제안 스킬:\n"
 
-    # Stats line
-    echo "📦 ${PLUGIN_COUNT}개 플러그인 · 🔧 ${MATCHED_SKILLS_COUNT}개 스킬 (전체: ${TOTAL_SKILLS})" >&2
-    echo "" >&2
-
-    # Suggested skills section
-    echo "🎯 제안 스킬:" >&2
-
-    # Priority mapping for sorting: critical=4, high=3, medium=2, low=1
-    awk -F'|' '{
+    # Get top 3 skills by priority
+    TOP_SKILLS=$(awk -F'|' '{
         priority=$1
         if (priority == "critical") p=4
         else if (priority == "high") p=3
         else if (priority == "medium") p=2
         else p=1
         print p"|"$0
-    }' "$MATCHED_SKILLS" | sort -t'|' -k1,1nr | cut -d'|' -f2- | head -3 | while IFS='|' read -r priority plugin skill keywords; do
-        # Format: plugin:skill
-        echo "  • ${plugin}:${skill}" >&2
-    done
+    }' "$MATCHED_SKILLS" | sort -t'|' -k1,1nr | cut -d'|' -f2- | head -3)
 
-    # Footer line
-    echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━" >&2
+    while IFS='|' read -r priority plugin skill keywords; do
+        USER_MSG="${USER_MSG}  • ${plugin}:${skill}\n"
+    done <<< "$TOP_SKILLS"
+
+    USER_MSG="${USER_MSG}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 fi
+
+# Output as JSON for Claude Code (stdout) with user message
+# additionalContext DISABLED to prevent blocking Claude's normal response
+OUTPUT_JSON=$(cat << EOF
+{
+  "message": "$(echo -e "$USER_MSG" | sed 's/"/\\"/g' | awk '{printf "%s\\n", $0}')"
+}
+EOF
+)
+
+# Save output for debugging
+echo "$OUTPUT_JSON" > "$DEBUG_OUTPUT_FILE"
+echo "[DEBUG] Output saved to $DEBUG_OUTPUT_FILE" >> "$LOG_FILE"
+
+# Print to stdout
+echo "$OUTPUT_JSON"
 
 # Cleanup
 rm -f "$AGGREGATED_SKILLS" "$MATCHED_SKILLS"

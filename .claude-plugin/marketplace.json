@@ -55,6 +55,12 @@
       "version": "2.0.0",
       "source": "./plugins/utilities",
       "description": "Utility tools"
+    },
+    {
+      "name": "all",
+      "version": "1.0.0",
+      "source": "./plugins/all",
+      "description": "Meta-plugin for installing all cc-skills plugins at once"
     }
   ]
 }

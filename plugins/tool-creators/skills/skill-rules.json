@@ -122,6 +122,31 @@
                     "(서브|sub).*?(에이전트|agent)"
                 ]
             }
+        },
+        "skill-health-checker": {
+            "type": "tool",
+            "enforcement": "suggest",
+            "priority": "medium",
+            "description": "스킬 건강도 진단 및 유지보수 가이드. 500줄 규칙, skill-rules.json 동기화, YAML 검증을 수행합니다.",
+            "promptTriggers": {
+                "keywords": [
+                    "스킬 진단",
+                    "스킬 체크",
+                    "skill health",
+                    "skill check",
+                    "500줄",
+                    "스킬 검증",
+                    "skill-rules 검증",
+                    "스킬 상태",
+                    "skill quality"
+                ],
+                "intentPatterns": [
+                    "(check|validate|diagnose).*?(skill|스킬)",
+                    "(skill|스킬).*(health|quality|validation|검증|진단|체크)",
+                    "500.*(line|줄|rule|규칙)",
+                    "(스킬|skill).*(상태|건강|품질)"
+                ]
+            }
         }
     },
     "notes": {
