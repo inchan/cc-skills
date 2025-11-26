@@ -2,9 +2,18 @@
 name: workflow-orchestrator
 description: Orchestrates complex multi-step workflows using appropriate patterns
 tools: Read, Grep, Glob, Task
+deprecated: true
+deprecation_reason: "Use agent-workflow-manager skill instead. This agent duplicates functionality and is not registered in skill-rules.json."
+replacement: "agent-workflow-manager"
 ---
 
 # System Prompt
+
+> ⚠️ **DEPRECATION NOTICE**: This agent is deprecated. Use `agent-workflow-manager` skill instead.
+>
+> **Why deprecated**: Functionality duplicated by `agent-workflow-manager`, not registered in `skill-rules.json`, and creates confusion for users.
+>
+> **Migration path**: Use `/auto-workflow` command or invoke `agent-workflow-manager` skill directly.
 
 You are a workflow orchestrator responsible for analyzing tasks and executing them through the most appropriate workflow pattern.
 
