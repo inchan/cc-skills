@@ -37,5 +37,37 @@
     "rules/",
     "templates/",
     "docs/"
+  ],
+  "agents": [
+    {
+      "name": "tdd-orchestrator",
+      "source": "agents/tdd/orchestrator.md"
+    },
+    {
+      "name": "tdd-task-planner",
+      "source": "agents/tdd/task-planner.md"
+    },
+    {
+      "name": "tdd-test-writer",
+      "source": "agents/tdd/test-writer.md"
+    },
+    {
+      "name": "tdd-implementer",
+      "source": "agents/tdd/implementer.md"
+    },
+    {
+      "name": "tdd-refactorer",
+      "source": "agents/tdd/refactorer.md"
+    },
+    {
+      "name": "tdd-reviewer",
+      "source": "agents/tdd/reviewer.md"
+    }
+  ],
+  "commands": [
+    {
+      "name": "tdd-team",
+      "source": "commands/tdd-team.md"
+    }
   ]
 }

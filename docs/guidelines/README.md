@@ -10,6 +10,7 @@
 |------|------|------|
 | [development.md](./development.md) | 개발 구현 가이드라인 | 개발자 |
 | [tool-creation.md](./tool-creation.md) | Skills/Hooks/Agents/Commands 생성 가이드 | 도구 개발자 |
+| [documentation.md](./documentation.md) | 문서 작성 및 중복 최소화 가이드 | 문서 작성자 |
 
 ---
 
@@ -45,6 +46,15 @@ guidelines/* (구현 가이드라인)
   - Sub-agents 정의
   - Commands 개발
   - Rules 설정
+
+### documentation.md
+- **목적**: 문서 작성 및 관리 원칙
+- **내용**:
+  - 중복 최소화 원칙
+  - 문서 역할 분리
+  - 계층적 구조
+  - 변경 이력 관리
+  - 품질 검증
 
 ---
 
@@ -89,4 +99,5 @@ guidelines/* (구현 가이드라인)
 
 ## 변경 이력
 
+- **2025-11-28**: documentation.md 추가 - 문서 중복 최소화 원칙 정의
 - **2025-11-28**: guidelines 디렉토리 생성 및 기존 문서 이동

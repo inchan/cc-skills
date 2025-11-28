@@ -19,125 +19,56 @@ Claude Code의 확장 기능을 체계적으로 개발하고 마켓플레이스 
 
 ---
 
-## 프로젝트 구조
+## 빠른 시작
 
-```
-cc-skills/
-├── docs/                  # 문서
-│   ├── guidelines/        # 가이드라인 모음
-│   ├── instruction.md     # 원본 지시사항
-│   ├── requirements.md    # 프로젝트 요구사항
-│   └── workflows.md       # 워크플로우 정의
-├── skills/                # 스킬 모음
-│   └── {skill-name}/
-├── hooks/                 # 훅 모음
-│   ├── hooks.json
-│   └── *.py|*.sh
-├── agents/                # 서브에이전트 모음
-│   └── {agent-name}.md
-├── commands/              # 커맨드 모음
-│   └── {command-name}.md
-├── rules/                 # 규칙 정의
-│   └── skill-rules.json
-├── templates/             # 템플릿
-│   ├── skills/
-│   ├── hooks/
-│   ├── agents/
-│   └── commands/
-├── tests/                 # 테스트
-│   ├── skills/
-│   ├── hooks/
-│   ├── agents/
-│   ├── commands/
-│   └── integration/
-└── .claude-plugin/        # 플러그인 메타데이터
-    ├── plugin.json
-    └── marketplace.json
-```
-
----
-
-## 시작하기
-
-### 1. 문서 읽기
-
-먼저 다음 문서들을 순서대로 읽어주세요:
-
-1. [instruction.md](docs/instruction.md) - 프로젝트 원본 지시사항
-2. [requirements.md](docs/requirements.md) - 프로젝트 요구사항
-3. [workflows.md](docs/workflows.md) - 작업 흐름
-4. [Development Guidelines](docs/guidelines/development.md) - 개발 가이드라인
-5. [Tool Creation Guide](docs/guidelines/tool-creation.md) - 도구 생성 가이드
-
-### 2. 개발 환경 설정
+### 1. 설치
 
 ```bash
-# 저장소 클론
 git clone https://github.com/your-org/cc-skills.git
 cd cc-skills
-
-# 의존성 설치
 npm install
+```
+
+### 2. 문서 읽기
+
+프로젝트를 이해하려면 다음 순서로 문서를 읽으세요:
+
+1. [docs/instruction.md](docs/instruction.md) - 원본 지시사항
+2. [docs/requirements.md](docs/requirements.md) - 프로젝트 요구사항
+3. [docs/guidelines/](docs/guidelines/) - 개발 가이드라인 모음
+4. [docs/references/](docs/references/) - 레퍼런스 및 빠른 검색 ⭐
+
+### 3. 개발 시작
+
+```bash
+# 테스트 실행
+npm test
 
 # 검증
 npm run validate
 ```
 
-### 3. 새로운 컴포넌트 개발
-
-#### Skills 생성
-```bash
-# 템플릿 복사
-cp -r templates/skills/SKILL.md.template skills/my-skill/SKILL.md
-
-# 편집 후 규칙 추가
-vim rules/skill-rules.json
-
-# 테스트
-npm run test:skills
-```
-
-#### Hooks 생성
-```bash
-# 템플릿 복사
-cp templates/hooks/hook.py.template hooks/my-hook.py
-
-# hooks.json 업데이트
-vim hooks/hooks.json
-
-# 실행 권한
-chmod +x hooks/my-hook.py
-
-# 테스트
-npm run test:hooks
-```
-
-#### Agents 생성
-```bash
-# 템플릿 복사
-cp templates/agents/agent.md.template agents/my-agent.md
-
-# 편집
-vim agents/my-agent.md
-```
-
-#### Commands 생성
-```bash
-# 템플릿 복사
-cp templates/commands/command.md.template commands/my-command.md
-
-# 편집
-vim commands/my-command.md
-```
+상세한 개발 워크플로우는 [docs/workflows.md](docs/workflows.md)와 [docs/references/](docs/references/)를 참고하세요.
 
 ---
 
-## Attribution
+## 프로젝트 구조
 
-일부 스킬은 공식 소스에서 복사 또는 참고했습니다:
+```
+cc-skills/
+├── skills/                # 스킬 모음
+├── hooks/                 # 훅 모음
+├── agents/                # 서브에이전트 모음
+├── commands/              # 커맨드 모음
+├── rules/                 # 규칙 정의
+├── templates/             # 컴포넌트 템플릿
+├── docs/                  # 문서
+│   ├── guidelines/        # 개발 가이드라인
+│   └── references/        # 레퍼런스 패턴
+└── .claude-plugin/        # 플러그인 메타데이터
+```
 
-- **webapp-testing**: [anthropics/skills](https://github.com/anthropics/skills)
-- **skill-creator**: [anthropics/skills](https://github.com/anthropics/skills)
+각 디렉토리의 상세 구조는 해당 디렉토리의 README.md 참고
 
 ---
 
@@ -147,13 +78,13 @@ vim commands/my-command.md
 
 - [Claude Code 공식 사이트](https://claude.ai/claude-code)
 - [공식 문서](https://docs.anthropic.com/claude-code)
-- [공식 블로그](https://www.anthropic.com/news)
 - [GitHub 샘플](https://github.com/anthropics/claude-code)
 
 ### 프로젝트 문서
 
-- [각 디렉토리별 README](skills/README.md)
-- [템플릿 가이드](templates/)
+- [개발 가이드라인](docs/guidelines/development.md)
+- [도구 생성 가이드](docs/guidelines/tool-creation.md)
+- [문서 작성 가이드](docs/guidelines/documentation.md)
 
 ---
 
@@ -161,7 +92,7 @@ vim commands/my-command.md
 
 1. Fork the repository
 2. Create your feature branch (`git checkout -b feature/amazing-feature`)
-3. Read [Development Guidelines](docs/guidelines/development.md)
+3. Read [Development Guidelines](docs/guidelines/development.md) and [References](docs/references/)
 4. Commit your changes following [workflows](docs/workflows.md)
 5. Push to the branch (`git push origin feature/amazing-feature`)
 6. Open a Pull Request
@@ -192,4 +123,6 @@ MIT License - 자세한 내용은 [LICENSE](LICENSE) 참고
 
 ## 변경 이력
 
-변경 사항은 [CHANGELOG.md](CHANGELOG.md) 참고
+- **2025-11-28**: QUICK_START.md 삭제 - 마켓플레이스 설치 기반으로 불필요, 내용은 docs/references로 이동
+- **2025-11-28**: README 간소화 - 중복 제거
+- 전체 변경 사항은 [CHANGELOG.md](CHANGELOG.md) 참고

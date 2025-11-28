@@ -28,6 +28,21 @@ references/
 
 ## 빠른 참조
 
+### 질문별 빠른 검색
+
+개발 중 자주 묻는 질문과 해당 레퍼런스:
+
+| 질문 | 레퍼런스 |
+|------|---------|
+| "PreToolUse 훅 어떻게 만들지?" | [pretooluse-pattern.md](./hooks/pretooluse-pattern.md) |
+| "훅 이벤트 종류는?" | [event-types.md](./hooks/event-types.md) |
+| "다중 에이전트 패턴은?" | [multi-agent-orchestration.md](./agents/multi-agent-orchestration.md) |
+| "슬래시 커맨드 구조는?" | [slash-command-pattern.md](./commands/slash-command-pattern.md) |
+| "플러그인 표준 구조는?" | [standard-structure.md](./plugins/standard-structure.md) |
+| "공식 예제 코드는?" | [bash-command-validator.py](./examples/bash-command-validator.py) |
+
+---
+
 ### 새로운 Hook 개발 시
 
 1. [PreToolUse Pattern](./hooks/pretooluse-pattern.md) 읽기
@@ -211,5 +226,6 @@ templates/{타입}/ 에서 템플릿 복사
 
 ## 변경 이력
 
+- **2025-11-28**: 질문별 빠른 검색 테이블 추가 (QUICK_START.md에서 이동)
 - **2025-11-28**: 초기 레퍼런스 구조 생성
 - **2025-11-28**: 공식 예제 기반 4개 카테고리 레퍼런스 작성
