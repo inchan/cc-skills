@@ -221,8 +221,8 @@ def read_root():
 {
   "mcpServers": {
     "other-agents": {
-      "command": "npx",
-      "args": ["-y", "@anthropic/other-agents-mcp"]
+      "command": "uvx",
+      "args": ["other-agents-mcp"]
     }
   }
 }

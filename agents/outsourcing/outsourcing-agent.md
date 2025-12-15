@@ -143,8 +143,8 @@ IF MCP 연결 실패:
     {
       \"mcpServers\": {
         \"other-agents\": {
-          \"command\": \"npx\",
-          \"args\": [\"-y\", \"@anthropic/other-agents-mcp\"]
+          \"command\": \"uvx\",
+          \"args\": [\"other-agents-mcp\"]
         }
       }
     }
