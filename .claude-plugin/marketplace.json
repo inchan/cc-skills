@@ -9,7 +9,7 @@
   },
   "plugins": [
     {
-      "name": "inchan - all",
+      "name": "inchan-all",
       "version": "0.1.0",
       "description": "모든 스킬, 에이전트, 명령어를 포함하는 통합 플러그인",
       "author": {
@@ -40,23 +40,23 @@
       ]
     },
     {
-      "name": "inchan - base",
+      "name": "inchan-base",
       "source": "./plugins/base"
     },
     {
-      "name": "inchan - tdd",
+      "name": "inchan-tdd",
       "source": "./plugins/tdd"
     },
     {
-      "name": "inchan - search",
+      "name": "inchan-search",
       "source": "./plugins/search"
     },
     {
-      "name": "inchan - doc-tools",
+      "name": "inchan-doc-tools",
       "source": "./plugins/doc-tools"
     },
     {
-      "name": "inchan - outsourcing",
+      "name": "inchan-outsourcing",
       "source": "./plugins/outsourcing"
     }
   ]
