@@ -11,7 +11,7 @@
 - **모델**: haiku (비용 절감, 빠른 응답)
 - **역할**: 문서-코드 불일치 탐지 및 수정
 - **도구**: Read, Grep, Glob, Edit, Write
-- **호출**: `/doc-update` 커맨드를 통해 호출
+- **호출**: `/icp:doc-update` 커맨드를 통해 호출
 
 ---
 
@@ -221,13 +221,13 @@ doc-updater 에이전트 호출
 
 ```bash
 # 전체 문서 검사 (자동 수정 안 함)
-/doc-update
+/icp:doc-update
 
 # 특정 디렉토리만 검사
-/doc-update --scope=specific --path=docs/
+/icp:doc-update --scope=specific --path=docs/
 
 # 자동 수정 적용
-/doc-update --auto-fix
+/icp:doc-update --auto-fix
 ```
 
 ### 응답 예시
@@ -326,9 +326,9 @@ doc-updater 에이전트 호출
 
 ## 관련 문서
 
-- [/doc-update 커맨드](../commands/doc-update-pattern.md)
+- [/icp:doc-update 커맨드](../commands/icp:doc-update-pattern.md)
 - [문서 작성 가이드](../../guidelines/documentation.md)
-- [doc-updater 에이전트](../../../plugins/doc-tools/agents/doc-updater.md)
+- [doc-updater 에이전트](../../../plugins/doc-tools/agents/icp:doc-updater.md)
 
 ---
 

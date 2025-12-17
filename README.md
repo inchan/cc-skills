@@ -55,13 +55,15 @@ npm run validate
 ## 프로젝트 구조
 
 ```
-claude-plugin/
+claude-plugins/
 ├── plugins/               # 플러그인 (핵심)
 │   ├── base/              # 공통 에이전트 (engineer)
 │   ├── tdd/               # TDD 개발 팀 (5개 에이전트)
 │   ├── search/            # 웹 검색 통합
 │   ├── doc-tools/         # 문서 관리
-│   └── outsourcing/       # AI CLI 위임
+│   ├── outsourcing/       # AI CLI 위임
+│   └── issue-linear/      # Linear 이슈 관리 (NEW)
+├── scripts/               # 개발 자동화 스크립트
 ├── tests/                 # 테스트 (중앙집중식)
 ├── docs/                  # 프로젝트 문서
 │   ├── guidelines/        # 개발 가이드라인
@@ -126,9 +128,13 @@ MIT License - 자세한 내용은 [LICENSE](LICENSE) 참고
 
 ## 변경 이력
 
+- **2025-12-17**: 프로젝트 확장
+  - issue-linear 플러그인 추가 (Linear 이슈 관리)
+  - scripts/ 디렉토리 추가 (플러그인 생성/업데이트 자동화)
+  - 플러그인 이름 통일 (inchan-* → icp-*)
 - **2025-12-15**: 프로젝트 구조 섹션 업데이트 (플러그인 기반 구조 반영)
 - **2025-12-01**: 문서 업데이트 자동화 도구 추가
-  - `/doc-update` 커맨드 추가 (문서-코드 불일치 자동 탐지/수정)
+  - `/icp:doc-update` 커맨드 추가 (문서-코드 불일치 자동 탐지/수정)
   - `doc-updater` 에이전트 추가 (haiku 모델 기반, 4가지 원칙)
   - 참조 가이드 추가: doc-update-pattern.md, doc-updater-agent-pattern.md
   - 플러그인 설정 검증 자동화 (validate-plugin-configs.js)

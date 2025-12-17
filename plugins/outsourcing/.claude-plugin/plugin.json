@@ -5,14 +5,5 @@
     "author": {
         "name": "inchan",
         "url": "https://github.com/inchan"
-    },
-    "skills": [
-        "./skills/outsourcing-core/SKILL.md"
-    ],
-    "commands": [
-        "./commands/outsource.md"
-    ],
-    "agents": [
-        "./agents/outsourcing-agent.md"
-    ]
+    }
 }

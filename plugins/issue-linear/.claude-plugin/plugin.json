@@ -1,7 +1,7 @@
 {
-    "name": "tdd",
+    "name": "issue-linear",
     "version": "0.1.0",
-    "description": "TDD 개발 구현",
+    "description": "Linear 이슈 관리 플러그인",
     "author": {
         "name": "inchan",
         "url": "https://github.com/inchan"

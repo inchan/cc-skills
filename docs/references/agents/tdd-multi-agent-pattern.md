@@ -2,9 +2,9 @@
 
 > claude-plugin 프로젝트의 TDD 자동화 패턴
 
-**구현 위치**: `agents/tdd/`, `commands/tdd-team.md`
+**구현 위치**: `agents/tdd/`, `commands/icp:tdd-team.md`
 
-**아키텍처**: `/tdd-team` 커맨드가 메인 스레드에서 5개 에이전트를 조율
+**아키텍처**: `/icp:tdd-team` 커맨드가 메인 스레드에서 5개 에이전트를 조율
 
 ---
 
@@ -31,7 +31,7 @@
 | **Refactorer** | Refactor 단계 | 코드 품질 개선 | Read, Edit, Grep, Bash |
 | **Reviewer** | 품질 검증 | 승인/거부 결정 + 피드백 | Read, Grep, Bash |
 
-**워크플로우 조율**: `/tdd-team` 커맨드가 메인 스레드에서 담당 (Claude Code 제약으로 인한 아키텍처 변경)
+**워크플로우 조율**: `/icp:tdd-team` 커맨드가 메인 스레드에서 담당 (Claude Code 제약으로 인한 아키텍처 변경)
 
 ---
 
@@ -40,10 +40,10 @@
 ### 실행 흐름
 
 ```
-사용자: /tdd-team "기능 설명"
+사용자: /icp:tdd-team "기능 설명"
     ↓
 ┌─────────────────────────────────────┐
-│ /tdd-team 커맨드 활성화              │
+│ /icp:tdd-team 커맨드 활성화              │
 │ (메인 스레드에서 워크플로우 조율)     │
 └─────────────────────────────────────┘
     ↓
@@ -217,7 +217,7 @@ FOR EACH task:
 
 ## 루프 제어 로직
 
-### /tdd-team 커맨드의 핵심 루프
+### /icp:tdd-team 커맨드의 핵심 루프
 
 ```python
 def orchestrate(feature_description):
@@ -408,19 +408,19 @@ Red → Green → Refactor
 
 1. **명확한 기능 설명**
    ```bash
-   ✓ /tdd-team "이메일 형식 검증 함수"
-   ✗ /tdd-team "검증"
+   ✓ /icp:tdd-team "이메일 형식 검증 함수"
+   ✗ /icp:tdd-team "검증"
    ```
 
 2. **작은 단위로 분할**
    ```bash
-   ✓ /tdd-team "사용자 등록 API"
-   ✗ /tdd-team "전체 전자상거래 시스템"
+   ✓ /icp:tdd-team "사용자 등록 API"
+   ✗ /icp:tdd-team "전체 전자상거래 시스템"
    ```
 
 3. **요구사항 명시**
    ```bash
-   ✓ /tdd-team "결제 API" "PCI-DSS 준수" "3D Secure"
+   ✓ /icp:tdd-team "결제 API" "PCI-DSS 준수" "3D Secure"
    ```
 
 4. **실패 시 스킵**
@@ -431,12 +431,12 @@ Red → Green → Refactor
 
 1. **모호한 요구사항**
    ```bash
-   ✗ /tdd-team "좋은 API 만들기"
+   ✗ /icp:tdd-team "좋은 API 만들기"
    ```
 
 2. **너무 큰 범위**
    ```bash
-   ✗ /tdd-team "전체 백엔드 시스템"
+   ✗ /icp:tdd-team "전체 백엔드 시스템"
    ```
 
 3. **테스트 프레임워크 없이 실행**
@@ -452,7 +452,7 @@ Red → Green → Refactor
 
 **입력**:
 ```bash
-/tdd-team "배열 합계 함수"
+/icp:tdd-team "배열 합계 함수"
 ```
 
 **실행**:
@@ -479,7 +479,7 @@ Red → Green → Refactor
 
 **입력**:
 ```bash
-/tdd-team "사용자 인증 API" "이메일 로그인" "JWT 토큰"
+/icp:tdd-team "사용자 인증 API" "이메일 로그인" "JWT 토큰"
 ```
 
 **실행**:
@@ -520,7 +520,7 @@ Red → Green → Refactor
   - 제안: 함수를 generateToken, signToken으로 분리
 
 다음 단계:
-/tdd-team "JWT 토큰 생성 함수"
+/icp:tdd-team "JWT 토큰 생성 함수"
 ```
 
 ---
@@ -542,12 +542,12 @@ Red → Green → Refactor
 - [Implementer](../../../plugins/tdd/agents/implementer.md)
 - [Refactorer](../../../plugins/tdd/agents/refactorer.md)
 - [Reviewer](../../../plugins/tdd/agents/reviewer.md)
-- [/tdd-team 커맨드](../../../plugins/tdd/commands/tdd-team.md)
+- [/icp:tdd-team 커맨드](../../../plugins/tdd/commands/icp:tdd-team.md)
 - [개발 가이드라인](../../guidelines/development.md)
 
 ---
 
 ## 변경 이력
 
-- **2025-11-29**: orchestrator 에이전트 제거, /tdd-team 커맨드가 조율 담당 (5개 에이전트로 변경)
+- **2025-11-29**: orchestrator 에이전트 제거, /icp:tdd-team 커맨드가 조율 담당 (5개 에이전트로 변경)
 - **2025-11-28**: TDD 다중 에이전트 패턴 문서 작성

@@ -33,14 +33,14 @@ cd ~/.claude/plugins
 git clone https://github.com/inchan/claude-plugins.git
 
 # 또는 특정 플러그인만 링크
-ln -s /path/to/claude-plugin/plugins/tdd ~/.claude/plugins/tdd
+ln -s /path/to/claude-plugins/plugins/tdd ~/.claude/plugins/tdd
 ```
 
 ### 수동 설치
 
 1. 이 디렉토리 전체를 `~/.claude/plugins/tdd`로 복사
 2. Claude Code 재시작
-3. `/tdd-team` 커맨드 사용 가능
+3. `/icp:tdd-team` 커맨드 사용 가능
 
 ---
 
@@ -50,10 +50,10 @@ ln -s /path/to/claude-plugin/plugins/tdd ~/.claude/plugins/tdd
 
 ```bash
 # 간단한 기능
-/tdd-team "배열 합계 함수"
+/icp:tdd-team "배열 합계 함수"
 
 # 복잡한 기능 (추가 요구사항 포함)
-/tdd-team "사용자 인증 API" "JWT 토큰" "bcrypt 해싱"
+/icp:tdd-team "사용자 인증 API" "JWT 토큰" "bcrypt 해싱"
 ```
 
 ### 사전 요구사항
@@ -84,7 +84,7 @@ ln -s /path/to/claude-plugin/plugins/tdd ~/.claude/plugins/tdd
 ```
 사용자
   ↓
-/tdd-team "기능 설명"
+/icp:tdd-team "기능 설명"
   ↓
 1. 입력 검증 (10자 이상)
   ↓
@@ -134,7 +134,7 @@ tests/tdd/
 ### 예시 1: 간단한 유틸리티 함수
 
 ```bash
-$ /tdd-team "배열의 짝수만 필터링하는 함수"
+$ /icp:tdd-team "배열의 짝수만 필터링하는 함수"
 
 ## 언어 감지
 TypeScript 프로젝트 감지 (jest)
@@ -167,7 +167,7 @@ npm test && git commit
 ### 예시 2: 복잡한 API
 
 ```bash
-$ /tdd-team "사용자 인증 API" "JWT 토큰" "bcrypt 해싱"
+$ /icp:tdd-team "사용자 인증 API" "JWT 토큰" "bcrypt 해싱"
 
 ## 언어 감지
 TypeScript 프로젝트 감지 (jest)
@@ -281,7 +281,7 @@ MIT License - [../../LICENSE](../../LICENSE) 참고
 
 ### v0.0.1 (2025-11-30)
 - 초기 릴리스
-  - `/tdd-team` 슬래시 커맨드 추가
+  - `/icp:tdd-team` 슬래시 커맨드 추가
   - 5개 TDD 에이전트 (task-planner, test-writer, implementer, refactorer, reviewer)
   - Red-Green-Refactor 자동화
   - TypeScript/JavaScript, Python 지원

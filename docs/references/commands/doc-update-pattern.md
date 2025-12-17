@@ -6,7 +6,7 @@
 
 ## 개요
 
-`/doc-update` 커맨드는 프로젝트의 모든 마크다운 문서를 스캔하여 코드와의 불일치를 탐지하고 자동 수정하는 도구입니다.
+`/icp:doc-update` 커맨드는 프로젝트의 모든 마크다운 문서를 스캔하여 코드와의 불일치를 탐지하고 자동 수정하는 도구입니다.
 
 - **모델**: haiku (비용 절감)
 - **에이전트**: doc-updater (doc-tools 플러그인)
@@ -20,13 +20,13 @@
 
 ```bash
 # 전체 문서 검사
-/doc-update
+/icp:doc-update
 
 # 특정 디렉토리만 검사
-/doc-update --scope=specific --path=docs/
+/icp:doc-update --scope=specific --path=docs/
 
 # 특정 파일 검사 + 자동 수정
-/doc-update --scope=specific --path=README.md --auto-fix
+/icp:doc-update --scope=specific --path=README.md --auto-fix
 ```
 
 ### 파라미터
@@ -108,7 +108,7 @@
 ### 실행 흐름
 
 ```
-/doc-update
+/icp:doc-update
     ↓
 파라미터 파싱 및 검증
     ↓
@@ -212,9 +212,9 @@ git diff로 변경사항을 확인한 후 커밋하세요.
 
 ## 관련 문서
 
-- [doc-updater 에이전트 패턴](../agents/doc-updater-agent-pattern.md)
+- [doc-updater 에이전트 패턴](../agents/icp:doc-updater-agent-pattern.md)
 - [문서 작성 가이드](../../guidelines/documentation.md)
-- [doc-update 커맨드](../../../plugins/doc-tools/commands/doc-update.md)
+- [doc-update 커맨드](../../../plugins/doc-tools/commands/icp:doc-update.md)
 
 ---
 

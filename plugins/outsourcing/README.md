@@ -31,7 +31,7 @@ cd ~/.claude/plugins
 git clone https://github.com/inchan/claude-plugins.git
 
 # 또는 특정 플러그인만 링크
-ln -s /path/to/claude-plugin/plugins/outsourcing ~/.claude/plugins/outsourcing
+ln -s /path/to/claude-plugins/plugins/outsourcing ~/.claude/plugins/outsourcing
 ```
 
 ### 수동 설치
@@ -47,7 +47,7 @@ ln -s /path/to/claude-plugin/plugins/outsourcing ~/.claude/plugins/outsourcing
 
 ```bash
 # CLI 선택 질문 (대화형)
-/outsource "이 프로젝트의 아키텍처를 분석하고 개선점을 제안해줘"
+/icp:outsource "이 프로젝트의 아키텍처를 분석하고 개선점을 제안해줘"
 
 # 사용 흐름
 1. 작업 내용 입력
@@ -92,7 +92,7 @@ plugins/outsourcing/
 ```
 사용자
   ↓
-/outsource 커맨드
+/icp:outsource 커맨드
   ↓
 1. 입력 검증 (작업 내용 확인)
   ↓
@@ -118,7 +118,7 @@ outsourcing-agent
 ### 예시 1: 코드 분석 요청
 
 ```bash
-$ /outsource "이 리포지토리의 테스트 커버리지를 분석하고 개선 방안을 제안해줘"
+$ /icp:outsource "이 리포지토리의 테스트 커버리지를 분석하고 개선 방안을 제안해줘"
 
 어떤 AI CLI에 작업을 위임하시겠습니까?
 [사용자 선택: Claude]
@@ -145,7 +145,7 @@ $ /outsource "이 리포지토리의 테스트 커버리지를 분석하고 개�
 ### 예시 2: 코드 생성 요청
 
 ```bash
-$ /outsource "FastAPI로 RESTful API 서버 만드는 예제 코드 작성"
+$ /icp:outsource "FastAPI로 RESTful API 서버 만드는 예제 코드 작성"
 
 어떤 AI CLI에 작업을 위임하시겠습니까?
 [사용자 선택: Codex]
@@ -277,7 +277,7 @@ MIT License - [../../LICENSE](../../LICENSE) 참고
 
 ### v0.1.0 (2025-11-30)
 - 🎉 **초기 릴리스**
-  - `/outsource` 슬래시 커맨드 추가
+  - `/icp:outsource` 슬래시 커맨드 추가
   - outsourcing-agent 에이전트 추가
   - outsourcing-core 스킬 추가
   - 대화형 CLI 선택 (Claude, Gemini, Codex, Qwen)

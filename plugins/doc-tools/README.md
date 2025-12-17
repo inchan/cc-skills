@@ -32,14 +32,14 @@ cd ~/.claude/plugins
 git clone https://github.com/inchan/claude-plugins.git
 
 # 또는 특정 플러그인만 링크
-ln -s /path/to/claude-plugin/plugins/doc-tools ~/.claude/plugins/doc-tools
+ln -s /path/to/claude-plugins/plugins/doc-tools ~/.claude/plugins/doc-tools
 ```
 
 ### 수동 설치
 
 1. 이 디렉토리 전체를 `~/.claude/plugins/doc-tools`로 복사
 2. Claude Code 재시작
-3. `/doc-update` 커맨드 사용 가능
+3. `/icp:doc-update` 커맨드 사용 가능
 
 ---
 
@@ -49,13 +49,13 @@ ln -s /path/to/claude-plugin/plugins/doc-tools ~/.claude/plugins/doc-tools
 
 ```bash
 # 전체 문서 검사
-/doc-update
+/icp:doc-update
 
 # 특정 디렉토리만 검사
-/doc-update --scope=specific --path=docs/
+/icp:doc-update --scope=specific --path=docs/
 
 # 특정 파일 검사 + 자동 수정
-/doc-update --scope=specific --path=README.md --auto-fix
+/icp:doc-update --scope=specific --path=README.md --auto-fix
 ```
 
 ### 옵션
@@ -101,7 +101,7 @@ plugins/doc-tools/
 ### 예시 1: 전체 문서 검사
 
 ```bash
-$ /doc-update
+$ /icp:doc-update
 
 ## 문서 업데이트 결과
 
@@ -130,7 +130,7 @@ $ /doc-update
 ### 예시 2: 자동 수정
 
 ```bash
-$ /doc-update --scope=specific --path=docs/ --auto-fix
+$ /icp:doc-update --scope=specific --path=docs/ --auto-fix
 
 ## 문서 업데이트 결과
 
@@ -157,7 +157,7 @@ git commit -m "docs: 문서 업데이트 (불일치 2개 수정)"
 ```
 사용자
   ↓
-/doc-update 커맨드
+/icp:doc-update 커맨드
   ↓
 1. 입력 검증 (scope, path, auto-fix 파싱)
   ↓
@@ -239,7 +239,7 @@ MIT License - [../../LICENSE](../../LICENSE) 참고
 
 ### v1.0.0 (2025-11-30)
 - 초기 릴리스
-  - `/doc-update` 슬래시 커맨드 추가
+  - `/icp:doc-update` 슬래시 커맨드 추가
   - doc-updater 에이전트 추가
   - 4가지 검증 원칙 (추적가능성/교차검증/사용자중심/완성도)
   - haiku 모델 사용으로 비용 절감

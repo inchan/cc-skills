@@ -111,13 +111,15 @@ npm run build
 ## 참고: 프로젝트 구조
 
 ```
-claude-plugin/
+claude-plugins/
 ├── plugins/               # 플러그인 (핵심)
 │   ├── base/              # 공통 에이전트 (engineer)
 │   ├── tdd/               # TDD 개발 팀 (5개 에이전트)
 │   ├── search/            # 웹 검색 통합
 │   ├── doc-tools/         # 문서 관리
-│   └── outsourcing/       # AI CLI 위임
+│   ├── outsourcing/       # AI CLI 위임
+│   └── issue-linear/      # Linear 이슈 관리
+├── scripts/               # 개발 자동화 스크립트
 ├── tests/                 # 테스트 (중앙집중식)
 ├── docs/                  # 문서 및 템플릿
 │   ├── guidelines/        # 개발 가이드라인
@@ -145,6 +147,10 @@ claude-plugin/
 
 ## 변경 이력
 
+- **2025-12-17**: 프로젝트 확장
+  - issue-linear 플러그인 추가
+  - scripts/ 디렉토리 추가
+  - 프로젝트 구조 업데이트
 - **2025-12-15**: 플러그인 기반 구조로 전환
   - `agents/`, `commands/`, `skills/` 인덱스 폴더 삭제
   - `rules/`, `hooks/` 폴더 삭제 (미사용)

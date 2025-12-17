@@ -9,7 +9,7 @@
   },
   "plugins": [
     {
-      "name": "inchan-all",
+      "name": "icp",
       "version": "0.1.0",
       "description": "모든 스킬, 에이전트, 명령어를 포함하는 통합 플러그인",
       "author": {
@@ -18,46 +18,57 @@
       },
       "source": "./",
       "skills": [
-        "./plugins/search/skills/search-core/SKILL.md",
-        "./plugins/outsourcing/skills/outsourcing-core/SKILL.md"
+        "./plugins/outsourcing/skills/outsourcing-core/SKILL.md",
+        "./plugins/search/skills/search-core/SKILL.md"
       ],
       "commands": [
-        "./plugins/tdd/commands/tdd-team.md",
-        "./plugins/search/commands/search.md",
+        "./plugins/base/commands/cleanup.md",
+        "./plugins/base/commands/questions-andrej-karpathy.md",
         "./plugins/doc-tools/commands/doc-update.md",
-        "./plugins/outsourcing/commands/outsource.md"
+        "./plugins/issue-linear/commands/issue-create.md",
+        "./plugins/issue-linear/commands/issue-resolve.md",
+        "./plugins/outsourcing/commands/outsource.md",
+        "./plugins/search/commands/search.md",
+        "./plugins/tdd/commands/tdd-team.md"
       ],
       "agents": [
         "./plugins/base/agents/engineer.md",
-        "./plugins/tdd/agents/task-planner.md",
-        "./plugins/tdd/agents/test-writer.md",
+        "./plugins/doc-tools/agents/doc-updater.md",
+        "./plugins/issue-linear/agents/code-mapper.md",
+        "./plugins/issue-linear/agents/issue-analyzer.md",
+        "./plugins/issue-linear/agents/issue-refiner.md",
+        "./plugins/outsourcing/agents/outsourcing-agent.md",
+        "./plugins/search/agents/search-agent.md",
         "./plugins/tdd/agents/implementer.md",
         "./plugins/tdd/agents/refactorer.md",
         "./plugins/tdd/agents/reviewer.md",
-        "./plugins/search/agents/search-agent.md",
-        "./plugins/doc-tools/agents/doc-updater.md",
-        "./plugins/outsourcing/agents/outsourcing-agent.md"
+        "./plugins/tdd/agents/task-planner.md",
+        "./plugins/tdd/agents/test-writer.md"
       ]
     },
     {
-      "name": "inchan-base",
+      "name": "icp-base",
       "source": "./plugins/base"
     },
     {
-      "name": "inchan-tdd",
+      "name": "icp-tdd",
       "source": "./plugins/tdd"
     },
     {
-      "name": "inchan-search",
+      "name": "icp-search",
       "source": "./plugins/search"
     },
     {
-      "name": "inchan-doc-tools",
+      "name": "icp-doc-tools",
       "source": "./plugins/doc-tools"
     },
     {
-      "name": "inchan-outsourcing",
+      "name": "icp-outsourcing",
       "source": "./plugins/outsourcing"
+    },
+    {
+      "name": "icp-issue-linear",
+      "source": "./plugins/issue-linear"
     }
   ]
 }

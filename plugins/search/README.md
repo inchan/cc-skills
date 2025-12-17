@@ -13,7 +13,7 @@ Search Plugin은 3가지 검색 전략(공식 문서/종합/모범 사례)을 �
 
 ### 주요 특징
 
-- **🔍 단일 커맨드**: `/search` 하나로 모든 검색 타입 접근
+- **🔍 단일 커맨드**: `/icp:search` 하나로 모든 검색 타입 접근
 - **📊 Tier 기반 필터링**: 출처 신뢰도에 따라 4단계 분류
 - **🎯 전략 선택**: 상황에 맞는 검색 전략 자동 적용
 - **♻️ DRY 준수**: 중복 코드 0%, 유지보수 포인트 1곳
@@ -32,14 +32,14 @@ cd ~/.claude/plugins
 git clone https://github.com/inchan/claude-plugins.git
 
 # 또는 특정 플러그인만 링크
-ln -s /path/to/claude-plugin/plugins/search ~/.claude/plugins/search
+ln -s /path/to/claude-plugins/plugins/search ~/.claude/plugins/search
 ```
 
 ### 수동 설치
 
 1. 이 디렉토리 전체를 `~/.claude/plugins/search`로 복사
 2. Claude Code 재시작
-3. `/search` 커맨드 사용 가능
+3. `/icp:search` 커맨드 사용 가능
 
 ---
 
@@ -49,12 +49,12 @@ ln -s /path/to/claude-plugin/plugins/search ~/.claude/plugins/search
 
 ```bash
 # Type 선택 질문 (interactive)
-/search "React hooks"
+/icp:search "React hooks"
 
 # Type 직접 지정
-/search --type=official "React Server Components"
-/search --type=comprehensive "Next.js performance"
-/search --type=best-practice "Express.js auth middleware"
+/icp:search --type=official "React Server Components"
+/icp:search --type=comprehensive "Next.js performance"
+/icp:search --type=best-practice "Express.js auth middleware"
 ```
 
 ### 검색 타입 비교
@@ -95,14 +95,14 @@ plugins/search/
     └── plugin.json                    # 플러그인 메타데이터
 
 참조하는 파일들:
-├── commands/search.md                 # 통합 커맨드
-├── agents/search/
+├── commands/icp:search.md                 # 통합 커맨드
+├── agents/icp:search/
 │   ├── search-agent.md                # 통합 에이전트
 │   └── resources/                     # 전략 문서
 │       ├── official-docs-strategy.md
 │       ├── comprehensive-strategy.md
 │       └── best-practice-strategy.md
-└── skills/search-core/
+└── skills/icp:search-core/
     ├── SKILL.md                       # 공통 검색 로직
     └── resources/
         ├── output-formats.md
@@ -116,7 +116,7 @@ plugins/search/
 ### 예시 1: 공식 문서 빠른 검색
 
 ```bash
-$ /search --type=official "React useEffect cleanup"
+$ /icp:search --type=official "React useEffect cleanup"
 
 ## 답변
 
@@ -139,7 +139,7 @@ Sources:
 ### 예시 2: 종합 검색 (비교 분석)
 
 ```bash
-$ /search --type=comprehensive "TypeScript generics best practices"
+$ /icp:search --type=comprehensive "TypeScript generics best practices"
 
 ## Tier 1: 공식 문서
 
@@ -165,7 +165,7 @@ Sources:
 ### 예시 3: 모범 사례 (코드 중심)
 
 ```bash
-$ /search --type=best-practice "Node.js error handling middleware"
+$ /icp:search --type=best-practice "Node.js error handling middleware"
 
 ## 추천 샘플 코드
 
@@ -198,7 +198,7 @@ Sources:
 ```
 User
   ↓
-/search command
+/icp:search command
   ↓
 search-agent (통합 에이전트)
   ↓
@@ -280,7 +280,7 @@ search-core skill
 - [공식 문서 전략](./agents/resources/official-docs-strategy.md)
 - [종합 검색 전략](./agents/resources/comprehensive-strategy.md)
 - [모범 사례 전략](./agents/resources/best-practice-strategy.md)
-- [search-core 스킬](./skills/search-core/SKILL.md)
+- [search-core 스킬](./skills/icp:search-core/SKILL.md)
 
 ### 개발 가이드
 

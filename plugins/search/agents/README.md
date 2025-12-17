@@ -7,7 +7,7 @@
 ## 디렉토리 구조
 
 ```
-agents/search/
+agents/icp:search/
 ├── README.md               # 검색 에이전트 개요
 ├── search-agent.md         # 통합 검색 에이전트
 └── resources/              # 전략 문서
@@ -24,7 +24,7 @@ Search Agent는 3가지 검색 전략(공식 문서/종합/모범 사례)을 하
 
 ### 주요 특징
 
-- **단일 진입점**: `/search` 커맨드로 모든 검색 타입 접근
+- **단일 진입점**: `/icp:search` 커맨드로 모든 검색 타입 접근
 - **전략 기반**: type 파라미터에 따라 적절한 전략 선택
 - **Resources 패턴**: 전략 문서를 resources/ 디렉토리로 분리하여 유지보수성 향상
 - **DRY 준수**: 공통 로직을 search-core 스킬로 분리
@@ -37,12 +37,12 @@ Search Agent는 3가지 검색 전략(공식 문서/종합/모범 사례)을 하
 
 ```bash
 # Type 선택 질문
-/search "React hooks"
+/icp:search "React hooks"
 
 # Type 직접 지정
-/search --type=official "React hooks"
-/search --type=comprehensive "React hooks"
-/search --type=best-practice "React hooks"
+/icp:search --type=official "React hooks"
+/icp:search --type=comprehensive "React hooks"
+/icp:search --type=best-practice "React hooks"
 ```
 
 ### 2. Agent 직접 호출
@@ -75,7 +75,7 @@ Search Agent는 3가지 검색 전략(공식 문서/종합/모범 사례)을 하
 | **Tier 3** | 신뢰 커뮤니티 | 50-69점 | Stack Overflow, Reddit |
 | **Tier 4** | 일반 커뮤니티 | 30-49점 | Medium, Dev.to, 개인 블로그 |
 
-상세 내용: [출처 필터링 가이드](../skills/search-core/resources/source-filters.md)
+상세 내용: [출처 필터링 가이드](../skills/icp:search-core/resources/source-filters.md)
 
 ---
 
@@ -123,7 +123,7 @@ Sources:
 - [모든 URL]
 ```
 
-상세 내용: [출력 형식 가이드](../skills/search-core/resources/output-formats.md)
+상세 내용: [출력 형식 가이드](../skills/icp:search-core/resources/output-formats.md)
 
 ---
 
@@ -153,7 +153,7 @@ Sources:
 
 Search Agent는 다음 공통 스킬을 사용합니다:
 
-- **search-core** ([SKILL.md](../skills/search-core/SKILL.md)):
+- **search-core** ([SKILL.md](../skills/icp:search-core/SKILL.md)):
   - **Gemini 검색 위임** (MCP/Bash)
   - 검색 래퍼 (WebSearch/WebFetch - Fallback)
   - Tier 분류 및 신뢰도 평가
@@ -165,7 +165,7 @@ Search Agent는 다음 공통 스킬을 사용합니다:
 ## 아키텍처
 
 ```
-/search command
+/icp:search command
     ↓
 search-agent.md (통합 에이전트)
     ↓
@@ -208,7 +208,7 @@ search-core skill
 
 - [Tool Creation Guide](../../docs/guidelines/tool-creation.md)
 - [Sub-agents 공식 문서](https://docs.anthropic.com/claude-code/agents)
-- [search-core 스킬](../skills/search-core/SKILL.md)
+- [search-core 스킬](../skills/icp:search-core/SKILL.md)
 
 ---
 

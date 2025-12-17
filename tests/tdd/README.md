@@ -227,7 +227,7 @@ expect(parseEdgeCases(response).length).toBeGreaterThan(3);
 **목적**: 실제 파일 생성을 포함한 전체 워크플로우 검증
 
 **절차**:
-1. `/tdd-team "기능 설명"` 명령어 실행
+1. `/icp:tdd-team "기능 설명"` 명령어 실행
 2. 생성된 파일 확인
 3. 테스트 실행 결과 확인
 
@@ -460,7 +460,7 @@ module.exports = sum;
 5. **에이전트 프롬프트 개선**: Write 도구 명시적 사용 (완료)
 
 ### 📋 다음 작업
-6. **방법 B 실행**: `/tdd-team` 명령어로 통합 테스트
+6. **방법 B 실행**: `/icp:tdd-team` 명령어로 통합 테스트
 7. **Refactorer/Reviewer 테스트**: Test 06-07 수행
 8. **Phase 3-4**: Slash Command 기반 통합 테스트
 9. **재설계 검토**: Orchestrator 강화 또는 상태 파일 방식

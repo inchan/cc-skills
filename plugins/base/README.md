@@ -32,7 +32,7 @@ cd ~/.claude/plugins
 git clone https://github.com/inchan/claude-plugins.git
 
 # 또는 특정 플러그인만 링크
-ln -s /path/to/claude-plugin/plugins/base ~/.claude/plugins/base
+ln -s /path/to/claude-plugins/plugins/base ~/.claude/plugins/base
 ```
 
 ---
@@ -82,6 +82,40 @@ ln -s /path/to/claude-plugin/plugins/base ~/.claude/plugins/base
 
 ---
 
+## 커맨드
+
+### /icp:cleanup
+
+> 코드 정리, 데드 코드 제거, 불필요한 주석 제거, 프로젝트 구조 최적화
+
+```bash
+# 기본 사용 (전체 정리)
+/icp:cleanup
+
+# 특정 디렉토리 정리
+/icp:cleanup src/ --type code --safe
+
+# Import만 최적화
+/icp:cleanup src/ --type imports
+```
+
+**정리 유형:**
+- `code`: 데드 코드 제거
+- `imports`: 미사용 import 제거
+- `files`: 미사용 파일 제거
+- `comments`: 불필요한 주석 제거
+- `all`: 전체 (기본값)
+
+### /icp:questions-andrej-karpathy
+
+> 주제에 적합한 전문가들의 관점 탐구 (Andrej Karpathy 팁 기반)
+
+```bash
+/icp:questions-andrej-karpathy LLM 아키텍처 설계
+```
+
+---
+
 ## 플러그인 구조
 
 ```
@@ -89,8 +123,11 @@ plugins/base/
 ├── README.md                    # 이 파일
 ├── .claude-plugin/
 │   └── plugin.json              # 플러그인 메타데이터
-└── agents/
-    └── engineer.md              # 범용 개발 도우미
+├── agents/
+│   └── engineer.md              # 범용 개발 도우미
+└── commands/
+    ├── cleanup.md               # 코드 정리 커맨드
+    └── questions-andrej-karpathy.md  # 전문가 관점 탐구
 ```
 
 ---
@@ -111,6 +148,11 @@ MIT License - [../../LICENSE](../../LICENSE) 참고
 ---
 
 ## 변경 이력
+
+### v1.1.0 (2025-12-17)
+- 커맨드 추가
+  - cleanup 커맨드 (코드 정리 자동화)
+  - questions-andrej-karpathy 커맨드 (전문가 관점 탐구)
 
 ### v1.0.0 (2025-12-15)
 - 초기 릴리스

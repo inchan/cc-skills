@@ -1,15 +1,9 @@
 {
     "name": "doc-tools",
     "description": "문서 업데이트 자동화 - 추적가능성/교차검증/사용자중심/완성도 검증",
-    "version": "1.0.1",
+    "version": "0.1.0",
     "author": {
         "name": "inchan",
         "url": "https://github.com/inchan"
-    },
-    "commands": [
-        "./commands/doc-update.md"
-    ],
-    "agents": [
-        "./agents/doc-updater.md"
-    ]
+    }
 }
